@@ -1,0 +1,204 @@
+<template>
+    <section class="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+        <aside class="rounded-[2rem] border border-white/10 bg-white/6 p-6 shadow-xl backdrop-blur-lg sm:p-8">
+            <p class="text-sm uppercase tracking-[0.3em] text-[var(--color-gold)]/85">Nueva categoria</p>
+            <h2 class="mt-4 font-[var(--font-display)] text-4xl font-bold">Crear categoria</h2>
+            <p class="mt-4 text-sm leading-7 text-white/72">
+                Anade una categoria nueva para clasificar tus gastos. Puedes definir nombre, color e icono.
+            </p>
+
+            <div class="mt-6 rounded-3xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] p-4 shadow-lg shadow-black/10">
+                <p class="text-xs uppercase tracking-[0.2em] text-white/55">Vista previa</p>
+                <div class="mt-3 flex items-center gap-3">
+                    <CategoryIconBadge :icon="form.icono" :color="form.color" :alt="`Icono de ${form.nombre || 'la categoria'}`" />
+                    <div>
+                        <p class="font-semibold text-white">{{ form.nombre || 'Nueva categoria' }}</p>
+                        <p class="text-sm text-white/55">{{ selectedIconLabel || 'Sin icono' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="formErrors.length" class="mt-6 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-50">
+                <ul class="space-y-2">
+                    <li v-for="error in formErrors" :key="error">{{ error }}</li>
+                </ul>
+            </div>
+
+            <form class="mt-8 space-y-5" @submit.prevent="submit">
+                <FormField v-model="form.nombre" label="Nombre" placeholder="Ej. Alimentacion" />
+
+                <div>
+                    <label class="mb-2 block text-sm font-semibold text-white/80">Color</label>
+                    <div class="flex items-center gap-3">
+                        <input v-model="form.color" type="color" required class="h-12 w-16 rounded-xl border border-white/10 bg-transparent p-1">
+                        <input :value="form.color" type="text" disabled class="flex-1 rounded-2xl border border-white/10 bg-[var(--color-ink-soft)]/70 px-4 py-3 text-white/60">
+                    </div>
+                </div>
+
+                <div>
+                    <div class="mb-3 flex items-center justify-between gap-3">
+                        <label class="block text-sm font-semibold text-white/80">Icono</label>
+                        <button
+                            v-if="form.icono"
+                            type="button"
+                            class="text-sm font-medium text-white/60 transition hover:text-white"
+                            @click="form.icono = ''"
+                        >
+                            Quitar icono
+                        </button>
+                    </div>
+
+                    <div v-if="iconOptions.length" class="grid grid-cols-4 gap-3 sm:grid-cols-5">
+                        <button
+                            v-for="icon in iconOptions"
+                            :key="icon.name"
+                            type="button"
+                            :class="form.icono === icon.name ? 'border-[var(--color-gold)] bg-[var(--color-gold)]/14' : 'border-white/10 bg-white/5 hover:bg-white/10'"
+                            class="flex items-center justify-center rounded-2xl border p-3 transition"
+                            :title="icon.label"
+                            @click="form.icono = icon.name"
+                        >
+                            <img :src="icon.url" :alt="icon.label" class="h-6 w-6 object-contain">
+                        </button>
+                    </div>
+
+                    <div v-else class="rounded-2xl border border-dashed border-white/15 bg-white/5 px-4 py-4 text-sm leading-7 text-white/60">
+                        No hay iconos disponibles todavia en <span class="font-medium text-white/78">public/images/icons</span>.
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full rounded-2xl bg-[var(--color-gold)] px-4 py-3 text-sm font-semibold text-[var(--color-ink)] transition hover:brightness-105">
+                    Guardar categoria
+                </button>
+            </form>
+        </aside>
+
+        <section class="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.09),rgba(255,255,255,0.03))] p-6 backdrop-blur-lg sm:p-8">
+            <div class="flex items-center justify-between gap-4">
+                <div>
+                    <p class="text-sm uppercase tracking-[0.2em] text-[var(--color-mint)]">Listado</p>
+                    <h2 class="mt-2 font-[var(--font-display)] text-3xl font-bold">Categorias disponibles</h2>
+                </div>
+                <div class="rounded-2xl border border-white/10 bg-white/8 px-4 py-2 text-sm text-white/70">
+                    {{ localCategories.length }} categorias
+                </div>
+            </div>
+
+            <div class="mt-8 space-y-4">
+                <article v-for="categoria in localCategories" :key="categoria.id" class="rounded-3xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] p-5 shadow-lg shadow-black/10">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <CategoryIconBadge :icon="categoria.icono" :color="categoria.color" :alt="`Icono de ${categoria.nombre}`" />
+                            <div>
+                                <h3 class="text-xl font-semibold text-white">{{ categoria.nombre }}</h3>
+                                <p class="mt-1 text-sm text-white/60">
+                                    Icono: {{ iconLabel(categoria.icono) || 'Sin icono' }} · Gastos asociados: {{ categoria.gastos_count }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 grid gap-4 lg:grid-cols-[1fr_auto]">
+                        <form class="grid gap-3 sm:grid-cols-3" @submit.prevent="$emit('update', categoria)">
+                            <FormField v-model="categoria.nombre" label="Nombre" />
+                            <FormField v-model="categoria.color" label="Color" />
+
+                            <div class="sm:col-span-3">
+                                <div class="mb-3 flex items-center justify-between gap-3">
+                                    <label class="block text-sm font-semibold text-white/80">Icono</label>
+                                    <button
+                                        v-if="categoria.icono"
+                                        type="button"
+                                        class="text-sm font-medium text-white/60 transition hover:text-white"
+                                        @click="categoria.icono = ''"
+                                    >
+                                        Quitar icono
+                                    </button>
+                                </div>
+
+                                <div v-if="iconOptions.length" class="grid grid-cols-4 gap-3 sm:grid-cols-6">
+                                    <button
+                                        v-for="icon in iconOptions"
+                                        :key="`${categoria.id}-${icon.name}`"
+                                        type="button"
+                                        :class="categoria.icono === icon.name ? 'border-[var(--color-gold)] bg-[var(--color-gold)]/14' : 'border-white/10 bg-white/5 hover:bg-white/10'"
+                                        class="flex items-center justify-center rounded-2xl border p-3 transition"
+                                        :title="icon.label"
+                                        @click="categoria.icono = icon.name"
+                                    >
+                                        <img :src="icon.url" :alt="icon.label" class="h-6 w-6 object-contain">
+                                    </button>
+                                </div>
+
+                                <div v-else class="rounded-2xl border border-dashed border-white/15 bg-white/5 px-4 py-4 text-sm text-white/60">
+                                    Sin iconos cargados en public/images/icons.
+                                </div>
+                            </div>
+
+                            <button type="submit" class="sm:col-span-3 rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/12">
+                                Guardar cambios
+                            </button>
+                        </form>
+
+                        <button @click="$emit('delete', categoria)" type="button" class="w-full rounded-2xl bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110 lg:w-auto">
+                            Borrar
+                        </button>
+                    </div>
+                </article>
+
+                <div v-if="localCategories.length === 0" class="rounded-3xl border border-dashed border-white/15 bg-white/5 px-5 py-8 text-center text-white/65">
+                    Todavia no hay categorias creadas.
+                </div>
+            </div>
+        </section>
+    </section>
+</template>
+
+<script setup>
+import { computed, reactive, ref, watch } from 'vue';
+import CategoryIconBadge from '../ui/CategoryIconBadge.vue';
+import FormField from '../ui/FormField.vue';
+
+const props = defineProps({
+    categories: { type: Array, required: true },
+    iconOptions: { type: Array, default: () => [] },
+});
+
+const emit = defineEmits(['create', 'update', 'delete']);
+
+const localCategories = ref(cloneCategories(props.categories));
+const formErrors = ref([]);
+const form = reactive({
+    nombre: '',
+    color: '#ff7a59',
+    icono: '',
+});
+
+const selectedIconLabel = computed(() => iconLabel(form.icono));
+
+watch(() => props.categories, (value) => {
+    localCategories.value = cloneCategories(value);
+}, { deep: true });
+
+function submit() {
+    formErrors.value = [];
+
+    if (!form.nombre.trim()) {
+        formErrors.value = ['El nombre es obligatorio.'];
+        return;
+    }
+
+    emit('create', { ...form });
+    form.nombre = '';
+    form.color = '#ff7a59';
+    form.icono = '';
+}
+
+function cloneCategories(value) {
+    return value.map((item) => ({ ...item }));
+}
+
+function iconLabel(iconName) {
+    return props.iconOptions.find((item) => item.name === iconName)?.label ?? iconName;
+}
+</script>

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="gradAxes" x1="10" y1="10" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4FAF7B"/>
+      <stop offset="100%" stop-color="#2DD4BF"/>
+    </linearGradient>
+    <radialGradient id="glowAxes" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse"
+      gradientTransform="translate(42 24) rotate(135) scale(30)">
+      <stop offset="0%" stop-color="#123C43" stop-opacity="0.42"/>
+      <stop offset="100%" stop-color="#081225" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Fondo -->
+  <rect x="6" y="6" width="52" height="52" rx="16" fill="#081225"/>
+  <rect x="6" y="6" width="52" height="52" rx="16" fill="url(#glowAxes)"/>
+
+  <!-- Card -->
+  <rect x="14" y="14" width="36" height="36" rx="9" fill="#0F1B31" stroke="#334155" stroke-width="2"/>
+
+  <!-- Cabecera -->
+  <rect x="19" y="20" width="11" height="2.5" rx="1.25" fill="#334155"/>
+
+  <!-- Gráfico circular -->
+  <circle cx="26.5" cy="34" r="8.5" fill="#0B1320" stroke="#334155" stroke-width="1.8"/>
+  <path d="M26.5 34 L26.5 25.5 A8.5 8.5 0 0 1 33.9 38.2 Z" fill="url(#gradAxes)"/>
+  <path d="M26.5 34 L33.9 38.2 A8.5 8.5 0 0 1 21 39.8 Z" fill="#4FAF7B" opacity="0.8"/>
+
+  <!-- Mini gráfica con ejes movida a la derecha -->
+  <path d="M36.8 30.5V23.5" stroke="#334155" stroke-width="1.7" stroke-linecap="round"/>
+  <path d="M36.8 30.5H46.5" stroke="#334155" stroke-width="1.7" stroke-linecap="round"/>
+
+  <path d="M38.3 29L40.5 27L42.4 27.9L45.9 24.8"
+        stroke="url(#gradAxes)"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+  <circle cx="45.9" cy="24.8" r="1.5" fill="url(#gradAxes)"/>
+
+  <!-- Moneda -->
+  <circle cx="43.5" cy="42.5" r="7.5" fill="#0B1320" stroke="#334155" stroke-width="1.8"/>
+  <path d="M46.2 39.4
+           C45.45 38.8 44.55 38.45 43.55 38.45
+           C41.5 38.45 40.15 39.9 39.8 41.8H45.15
+           M39.65 43.1H44.6
+           M39.8 44.4
+           C40.15 46.3 41.5 47.75 43.55 47.75
+           C44.55 47.75 45.45 47.4 46.2 46.8"
+        stroke="url(#gradAxes)"
+        stroke-width="1.95"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+</svg>
