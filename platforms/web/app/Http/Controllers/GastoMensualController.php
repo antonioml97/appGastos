@@ -9,12 +9,23 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
+/**
+ * Gestiona la pantalla mensual y las operaciones sobre gastos e ingresos.
+ *
+ * @autor Antonio Martin Leon
+ */
 class GastoMensualController extends Controller
 {
+    /**
+     * Inyecta el repositorio encargado del resumen mensual.
+     */
     public function __construct(
         private readonly MonthlyReportRepositoryInterface $monthlyReports,
     ) {}
 
+    /**
+     * Muestra la vista mensual o devuelve su payload en JSON.
+     */
     public function index(Request $request): View|JsonResponse
     {
         $payload = $this->monthlyReports->getPayload($request->string('mes')->toString());
@@ -26,6 +37,9 @@ class GastoMensualController extends Controller
         return view('welcome', ['appData' => $payload]);
     }
 
+    /**
+     * Crea un nuevo gasto mensual.
+     */
     public function storeGasto(Request $request): JsonResponse
     {
         $validated = $this->validateGasto($request);
@@ -36,6 +50,9 @@ class GastoMensualController extends Controller
         ]);
     }
 
+    /**
+     * Actualiza un gasto existente.
+     */
     public function updateGasto(Request $request, Gasto $gasto): JsonResponse
     {
         $validated = $this->validateGasto($request);
@@ -46,6 +63,9 @@ class GastoMensualController extends Controller
         ]);
     }
 
+    /**
+     * Elimina un gasto existente.
+     */
     public function destroyGasto(Gasto $gasto): JsonResponse
     {
         return response()->json([
@@ -54,6 +74,9 @@ class GastoMensualController extends Controller
         ]);
     }
 
+    /**
+     * Crea un nuevo ingreso mensual.
+     */
     public function storeIngreso(Request $request): JsonResponse
     {
         $validated = $this->validateIngreso($request);
@@ -64,6 +87,9 @@ class GastoMensualController extends Controller
         ]);
     }
 
+    /**
+     * Elimina un ingreso existente.
+     */
     public function destroyIngreso(Ingreso $ingreso): JsonResponse
     {
         return response()->json([
@@ -72,6 +98,11 @@ class GastoMensualController extends Controller
         ]);
     }
 
+    /**
+     * Valida los datos necesarios para registrar o actualizar un gasto.
+     *
+     * @return array<string, mixed>
+     */
     private function validateGasto(Request $request): array
     {
         return $request->validate([
@@ -83,6 +114,11 @@ class GastoMensualController extends Controller
         ]);
     }
 
+    /**
+     * Valida los datos necesarios para registrar un ingreso.
+     *
+     * @return array<string, mixed>
+     */
     private function validateIngreso(Request $request): array
     {
         return $request->validate([

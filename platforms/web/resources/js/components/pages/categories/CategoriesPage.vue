@@ -85,65 +85,93 @@
             </div>
 
             <div class="mt-8 space-y-4">
-                <article v-for="categoria in localCategories" :key="categoria.id" class="rounded-3xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] p-5 shadow-lg shadow-black/10">
+                <article
+                    v-for="categoria in localCategories"
+                    :key="categoria.id"
+                    class="rounded-3xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] p-5 shadow-lg shadow-black/10"
+                >
                     <div class="flex items-start justify-between gap-4">
-                        <div class="flex items-center gap-4">
+                        <div class="flex min-w-0 items-center gap-4">
                             <CategoryIconBadge :icon="categoria.icono" :color="categoria.color" :alt="`Icono de ${categoria.nombre}`" />
-                            <div>
-                                <h3 class="text-xl font-semibold text-white">{{ categoria.nombre }}</h3>
+                            <div class="min-w-0">
+                                <h3 class="truncate text-xl font-semibold text-white">{{ categoria.nombre }}</h3>
                                 <p class="mt-1 text-sm text-white/60">
                                     Icono: {{ iconLabel(categoria.icono) || 'Sin icono' }} · Gastos asociados: {{ categoria.gastos_count }}
                                 </p>
                             </div>
                         </div>
+
+                        <div class="flex shrink-0 gap-2">
+                            <button
+                                type="button"
+                                class="rounded-xl border border-white/10 bg-white/8 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/12"
+                                @click="toggleEdit(categoria)"
+                            >
+                                {{ editingCategoryId === categoria.id ? 'Cerrar' : 'Modificar' }}
+                            </button>
+                            <button
+                                type="button"
+                                class="rounded-xl bg-[var(--color-accent)] px-3 py-2 text-xs font-semibold text-white transition hover:brightness-110"
+                                @click="$emit('delete', categoria)"
+                            >
+                                Borrar
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="mt-5 grid gap-4 lg:grid-cols-[1fr_auto]">
-                        <form class="grid gap-3 sm:grid-cols-3" @submit.prevent="$emit('update', categoria)">
-                            <FormField v-model="categoria.nombre" label="Nombre" />
-                            <FormField v-model="categoria.color" label="Color" />
+                    <form
+                        v-if="editingCategoryId === categoria.id"
+                        class="mt-5 grid gap-3 sm:grid-cols-3"
+                        @submit.prevent="submitUpdate(categoria)"
+                    >
+                        <FormField v-model="categoria.nombre" label="Nombre" />
+                        <FormField v-model="categoria.color" label="Color" />
 
-                            <div class="sm:col-span-3">
-                                <div class="mb-3 flex items-center justify-between gap-3">
-                                    <label class="block text-sm font-semibold text-white/80">Icono</label>
-                                    <button
-                                        v-if="categoria.icono"
-                                        type="button"
-                                        class="text-sm font-medium text-white/60 transition hover:text-white"
-                                        @click="categoria.icono = ''"
-                                    >
-                                        Quitar icono
-                                    </button>
-                                </div>
-
-                                <div v-if="iconOptions.length" class="grid grid-cols-4 gap-3 sm:grid-cols-6">
-                                    <button
-                                        v-for="icon in iconOptions"
-                                        :key="`${categoria.id}-${icon.name}`"
-                                        type="button"
-                                        :class="categoria.icono === icon.name ? 'border-[var(--color-gold)] bg-[var(--color-gold)]/14' : 'border-white/10 bg-white/5 hover:bg-white/10'"
-                                        class="flex items-center justify-center rounded-2xl border p-3 transition"
-                                        :title="icon.label"
-                                        @click="categoria.icono = icon.name"
-                                    >
-                                        <img :src="icon.url" :alt="icon.label" class="h-6 w-6 object-contain">
-                                    </button>
-                                </div>
-
-                                <div v-else class="rounded-2xl border border-dashed border-white/15 bg-white/5 px-4 py-4 text-sm text-white/60">
-                                    Sin iconos cargados en public/images/icons.
-                                </div>
+                        <div class="sm:col-span-3">
+                            <div class="mb-3 flex items-center justify-between gap-3">
+                                <label class="block text-sm font-semibold text-white/80">Icono</label>
+                                <button
+                                    v-if="categoria.icono"
+                                    type="button"
+                                    class="text-sm font-medium text-white/60 transition hover:text-white"
+                                    @click="categoria.icono = ''"
+                                >
+                                    Quitar icono
+                                </button>
                             </div>
 
-                            <button type="submit" class="sm:col-span-3 rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/12">
+                            <div v-if="iconOptions.length" class="grid grid-cols-4 gap-3 sm:grid-cols-6">
+                                <button
+                                    v-for="icon in iconOptions"
+                                    :key="`${categoria.id}-${icon.name}`"
+                                    type="button"
+                                    :class="categoria.icono === icon.name ? 'border-[var(--color-gold)] bg-[var(--color-gold)]/14' : 'border-white/10 bg-white/5 hover:bg-white/10'"
+                                    class="flex items-center justify-center rounded-2xl border p-3 transition"
+                                    :title="icon.label"
+                                    @click="categoria.icono = icon.name"
+                                >
+                                    <img :src="icon.url" :alt="icon.label" class="h-6 w-6 object-contain">
+                                </button>
+                            </div>
+
+                            <div v-else class="rounded-2xl border border-dashed border-white/15 bg-white/5 px-4 py-4 text-sm text-white/60">
+                                Sin iconos cargados en public/images/icons.
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-3 flex flex-wrap gap-2">
+                            <button type="submit" class="rounded-xl border border-white/10 bg-white/8 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/12">
                                 Guardar cambios
                             </button>
-                        </form>
-
-                        <button @click="$emit('delete', categoria)" type="button" class="w-full rounded-2xl bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110 lg:w-auto">
-                            Borrar
-                        </button>
-                    </div>
+                            <button
+                                type="button"
+                                class="rounded-xl border border-white/10 bg-transparent px-4 py-2.5 text-sm font-semibold text-white/70 transition hover:bg-white/8 hover:text-white"
+                                @click="cancelEdit"
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
                 </article>
 
                 <div v-if="localCategories.length === 0" class="rounded-3xl border border-dashed border-white/15 bg-white/5 px-5 py-8 text-center text-white/65">
@@ -156,8 +184,8 @@
 
 <script setup>
 import { computed, reactive, ref, watch } from 'vue';
-import CategoryIconBadge from '../ui/CategoryIconBadge.vue';
-import FormField from '../ui/FormField.vue';
+import CategoryIconBadge from '../../ui/category/CategoryIconBadge.vue';
+import FormField from '../../ui/form/FormField.vue';
 
 const props = defineProps({
     categories: { type: Array, required: true },
@@ -168,6 +196,7 @@ const emit = defineEmits(['create', 'update', 'delete']);
 
 const localCategories = ref(cloneCategories(props.categories));
 const formErrors = ref([]);
+const editingCategoryId = ref(null);
 const form = reactive({
     nombre: '',
     color: '#ff7a59',
@@ -178,6 +207,10 @@ const selectedIconLabel = computed(() => iconLabel(form.icono));
 
 watch(() => props.categories, (value) => {
     localCategories.value = cloneCategories(value);
+
+    if (editingCategoryId.value !== null && !localCategories.value.some((item) => item.id === editingCategoryId.value)) {
+        editingCategoryId.value = null;
+    }
 }, { deep: true });
 
 function submit() {
@@ -200,5 +233,19 @@ function cloneCategories(value) {
 
 function iconLabel(iconName) {
     return props.iconOptions.find((item) => item.name === iconName)?.label ?? iconName;
+}
+
+function toggleEdit(categoria) {
+    editingCategoryId.value = editingCategoryId.value === categoria.id ? null : categoria.id;
+}
+
+function cancelEdit() {
+    editingCategoryId.value = null;
+    localCategories.value = cloneCategories(props.categories);
+}
+
+function submitUpdate(categoria) {
+    emit('update', categoria);
+    editingCategoryId.value = null;
 }
 </script>

@@ -5,6 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Representa un gasto individual registrado por el usuario.
+ *
+ * @autor Antonio Martin Leon
+ */
 class Gasto extends Model
 {
     protected $table = 'gastos';
@@ -17,6 +22,11 @@ class Gasto extends Model
         'observaciones',
     ];
 
+    /**
+     * Define las conversiones automaticas de atributos del modelo.
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -25,6 +35,9 @@ class Gasto extends Model
         ];
     }
 
+    /**
+     * Obtiene la categoria asociada al gasto.
+     */
     public function categoria(): BelongsTo
     {
         return $this->belongsTo(Categoria::class, 'categoria_id');

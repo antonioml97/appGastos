@@ -5,8 +5,18 @@ namespace App\Support;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
+/**
+ * Centraliza el descubrimiento y listado de iconos disponibles para categorias.
+ *
+ * @autor Antonio Martin Leon
+ */
 class CategoryIconCatalog
 {
+    /**
+     * Devuelve todos los iconos detectados en la carpeta publica.
+     *
+     * @return array<int, array<string, string>>
+     */
     public static function all(): array
     {
         $directory = public_path('images/icons');
@@ -34,6 +44,11 @@ class CategoryIconCatalog
             ->all();
     }
 
+    /**
+     * Devuelve unicamente los nombres internos de los iconos disponibles.
+     *
+     * @return array<int, string>
+     */
     public static function names(): array
     {
         return collect(static::all())

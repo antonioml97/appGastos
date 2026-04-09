@@ -11,10 +11,15 @@ use App\Repositories\EloquentYearlyReportRepository;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Registra dependencias de aplicacion y prepara recursos base al arrancar.
+ *
+ * @autor Antonio Martin Leon
+ */
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Registra los bindings principales del contenedor de servicios.
      */
     public function register(): void
     {
@@ -24,13 +29,16 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * Ejecuta tareas de inicializacion al arrancar la aplicacion.
      */
     public function boot(): void
     {
         $this->ensureSqliteDatabaseExists();
     }
 
+    /**
+     * Garantiza que exista el fichero SQLite cuando esa conexion esta activa.
+     */
     private function ensureSqliteDatabaseExists(): void
     {
         if (config('database.default') !== 'sqlite') {
@@ -55,6 +63,9 @@ class AppServiceProvider extends ServiceProvider
         }
     }
 
+    /**
+     * Determina si una ruta del sistema de archivos es absoluta.
+     */
     private function isAbsolutePath(string $path): bool
     {
         return str_starts_with($path, '/')

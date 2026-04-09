@@ -11,12 +11,23 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
+/**
+ * Gestiona las peticiones HTTP relacionadas con las categorias.
+ *
+ * @autor Antonio Martin Leon
+ */
 class CategoriaController extends Controller
 {
+    /**
+     * Inyecta el repositorio encargado de las categorias.
+     */
     public function __construct(
         private readonly CategoryRepositoryInterface $categories,
     ) {}
 
+    /**
+     * Muestra la pantalla de categorias o devuelve su payload en JSON.
+     */
     public function index(Request $request): View|JsonResponse
     {
         $payload = $this->categories->getIndexPayload();
@@ -28,6 +39,9 @@ class CategoriaController extends Controller
         return view('welcome', ['appData' => $payload]);
     }
 
+    /**
+     * Crea una nueva categoria con los datos validados de la peticion.
+     */
     public function store(Request $request): JsonResponse
     {
         $validated = $this->validateCategoria($request);
@@ -46,6 +60,9 @@ class CategoriaController extends Controller
         ]);
     }
 
+    /**
+     * Actualiza una categoria existente.
+     */
     public function update(Request $request, Categoria $categoria): JsonResponse
     {
         $validated = $this->validateCategoria($request, $categoria);
@@ -64,6 +81,9 @@ class CategoriaController extends Controller
         ]);
     }
 
+    /**
+     * Elimina una categoria si no tiene gastos asociados.
+     */
     public function destroy(Categoria $categoria): JsonResponse
     {
         try {
@@ -80,6 +100,11 @@ class CategoriaController extends Controller
         ]);
     }
 
+    /**
+     * Valida los datos de entrada necesarios para crear o actualizar categorias.
+     *
+     * @return array<string, mixed>
+     */
     private function validateCategoria(Request $request, ?Categoria $categoria = null): array
     {
         $uniqueRule = 'unique:categorias,nombre';

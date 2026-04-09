@@ -198,7 +198,7 @@
 
 <script setup>
 import { computed } from 'vue';
-import CategoryIconBadge from '../ui/CategoryIconBadge.vue';
+import CategoryIconBadge from '../../ui/category/CategoryIconBadge.vue';
 
 const props = defineProps({
     state: {

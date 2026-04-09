@@ -12,13 +12,18 @@ use Illuminate\Notifications\Notifiable;
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
+/**
+ * Representa al usuario autenticable de la aplicacion.
+ *
+ * @autor Antonio Martin Leon
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
-     * Get the attributes that should be cast.
+     * Define los casteos automaticos de los atributos del usuario.
      *
      * @return array<string, string>
      */

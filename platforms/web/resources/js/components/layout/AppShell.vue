@@ -86,10 +86,10 @@
 
 <script setup>
 import { computed, onBeforeUnmount, reactive, ref } from 'vue';
-import CategoriesPage from './pages/CategoriesPage.vue';
-import HomePage from './pages/HomePage.vue';
-import MonthlyPage from './pages/MonthlyPage.vue';
-import YearlyPage from './pages/YearlyPage.vue';
+import CategoriesPage from '../pages/categories/CategoriesPage.vue';
+import HomePage from '../pages/home/HomePage.vue';
+import MonthlyPage from '../pages/monthly/MonthlyPage.vue';
+import YearlyPage from '../pages/yearly/YearlyPage.vue';
 
 const initialData = window.__APP_DATA ?? { page: 'home', title: 'Panel principal de AppGastos' };
 

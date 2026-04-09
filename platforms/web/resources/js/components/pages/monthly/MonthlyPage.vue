@@ -287,10 +287,10 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue';
-import CategoryIconBadge from '../ui/CategoryIconBadge.vue';
-import FormField from '../ui/FormField.vue';
-import FormTextarea from '../ui/FormTextarea.vue';
-import StatCard from '../ui/StatCard.vue';
+import CategoryIconBadge from '../../ui/category/CategoryIconBadge.vue';
+import FormField from '../../ui/form/FormField.vue';
+import FormTextarea from '../../ui/form/FormTextarea.vue';
+import StatCard from '../../ui/stats/StatCard.vue';
 
 const props = defineProps({
     state: { type: Object, required: true },

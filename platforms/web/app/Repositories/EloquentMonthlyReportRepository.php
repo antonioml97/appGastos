@@ -9,8 +9,18 @@ use App\Models\Ingreso;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Implementa la logica de consulta y mutacion del resumen mensual.
+ *
+ * @autor Antonio Martin Leon
+ */
 class EloquentMonthlyReportRepository implements MonthlyReportRepositoryInterface
 {
+    /**
+     * Construye el payload del informe mensual para el mes solicitado.
+     *
+     * @return array<string, mixed>
+     */
     public function getPayload(?string $month): array
     {
         $selectedMonth = $this->resolveMonth($month);
@@ -94,6 +104,12 @@ class EloquentMonthlyReportRepository implements MonthlyReportRepositoryInterfac
         ];
     }
 
+    /**
+     * Registra un gasto y devuelve su representacion serializada.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
     public function createExpense(array $data): array
     {
         $gasto = Gasto::query()
@@ -103,6 +119,12 @@ class EloquentMonthlyReportRepository implements MonthlyReportRepositoryInterfac
         return $this->serializeExpense($gasto);
     }
 
+    /**
+     * Actualiza un gasto existente y devuelve su representacion serializada.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
     public function updateExpense(Gasto $gasto, array $data): array
     {
         $gasto->update($data);
@@ -111,6 +133,9 @@ class EloquentMonthlyReportRepository implements MonthlyReportRepositoryInterfac
         return $this->serializeExpense($gasto);
     }
 
+    /**
+     * Elimina un gasto y devuelve su identificador.
+     */
     public function deleteExpense(Gasto $gasto): int
     {
         $gastoId = $gasto->id;
@@ -119,6 +144,12 @@ class EloquentMonthlyReportRepository implements MonthlyReportRepositoryInterfac
         return $gastoId;
     }
 
+    /**
+     * Registra un ingreso y devuelve su representacion serializada.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
     public function createIncome(array $data): array
     {
         $ingreso = Ingreso::query()->create($data);
@@ -126,6 +157,9 @@ class EloquentMonthlyReportRepository implements MonthlyReportRepositoryInterfac
         return $this->serializeIncome($ingreso);
     }
 
+    /**
+     * Elimina un ingreso y devuelve su identificador.
+     */
     public function deleteIncome(Ingreso $ingreso): int
     {
         $ingresoId = $ingreso->id;
@@ -134,6 +168,11 @@ class EloquentMonthlyReportRepository implements MonthlyReportRepositoryInterfac
         return $ingresoId;
     }
 
+    /**
+     * Convierte un gasto en un array listo para la interfaz.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeExpense(Gasto $gasto): array
     {
         return [
@@ -153,6 +192,11 @@ class EloquentMonthlyReportRepository implements MonthlyReportRepositoryInterfac
         ];
     }
 
+    /**
+     * Convierte un ingreso en un array listo para la interfaz.
+     *
+     * @return array<string, mixed>
+     */
     private function serializeIncome(Ingreso $ingreso): array
     {
         return [
@@ -165,6 +209,9 @@ class EloquentMonthlyReportRepository implements MonthlyReportRepositoryInterfac
         ];
     }
 
+    /**
+     * Resuelve el mes solicitado o usa el mes actual por defecto.
+     */
     private function resolveMonth(?string $month): Carbon
     {
         if (is_string($month) && preg_match('/^\d{4}-\d{2}$/', $month) === 1) {
