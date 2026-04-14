@@ -4,8 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Crea la tabla de gastos con su relacion hacia categorias.
+ *
+ * @autor Antonio Martin Leon
+ */
 return new class extends Migration
 {
+    /**
+     * Ejecuta la migracion creando la tabla de gastos.
+     */
     public function up(): void
     {
         Schema::create('gastos', function (Blueprint $table) {
@@ -24,6 +32,9 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Revierte la migracion eliminando la tabla de gastos.
+     */
     public function down(): void
     {
         Schema::dropIfExists('gastos');

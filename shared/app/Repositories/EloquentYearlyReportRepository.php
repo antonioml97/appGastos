@@ -9,8 +9,18 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Implementa la construccion del informe anual mediante consultas Eloquent.
+ *
+ * @autor Antonio Martin Leon
+ */
 class EloquentYearlyReportRepository implements YearlyReportRepositoryInterface
 {
+    /**
+     * Construye el payload del resumen anual para el ano solicitado.
+     *
+     * @return array<string, mixed>
+     */
     public function getPayload(?int $year): array
     {
         $selectedYear = $this->resolveYear($year);
@@ -94,6 +104,11 @@ class EloquentYearlyReportRepository implements YearlyReportRepositoryInterface
         ];
     }
 
+    /**
+     * Genera las opciones de anos disponibles alrededor del ano seleccionado.
+     *
+     * @return Collection<int, int>
+     */
     private function buildYearOptions(int $selectedYear): Collection
     {
         $currentYear = now()->year;
@@ -105,6 +120,9 @@ class EloquentYearlyReportRepository implements YearlyReportRepositoryInterface
             ->values();
     }
 
+    /**
+     * Resuelve el ano solicitado o usa el ano actual por defecto.
+     */
     private function resolveYear(?int $year): int
     {
         if ($year !== null && $year >= 2000 && $year <= 2100) {

@@ -19,6 +19,7 @@ class Gasto extends Model
         'importe',
         'fecha',
         'categoria_id',
+        'movimiento_fijo_id',
         'observaciones',
     ];
 
@@ -41,5 +42,13 @@ class Gasto extends Model
     public function categoria(): BelongsTo
     {
         return $this->belongsTo(Categoria::class, 'categoria_id');
+    }
+
+    /**
+     * Obtiene el movimiento fijo que genero este gasto, si existe.
+     */
+    public function movimientoFijo(): BelongsTo
+    {
+        return $this->belongsTo(MovimientoFijo::class, 'movimiento_fijo_id');
     }
 }

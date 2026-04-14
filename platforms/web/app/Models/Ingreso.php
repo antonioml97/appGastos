@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Representa un ingreso registrado dentro del periodo contable.
@@ -17,6 +18,7 @@ class Ingreso extends Model
         'titulo',
         'importe',
         'fecha',
+        'movimiento_fijo_id',
         'observaciones',
     ];
 
@@ -31,5 +33,13 @@ class Ingreso extends Model
             'fecha' => 'date',
             'importe' => 'decimal:2',
         ];
+    }
+
+    /**
+     * Obtiene el movimiento fijo que genero este ingreso, si existe.
+     */
+    public function movimientoFijo(): BelongsTo
+    {
+        return $this->belongsTo(MovimientoFijo::class, 'movimiento_fijo_id');
     }
 }

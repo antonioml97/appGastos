@@ -1,0 +1,19 @@
+{
+  "categoriasBase": [
+    { "id": "ahorro", "nombre": "Ahorro", "icono": "ahorro", "color": "#22C55E" },
+    { "id": "coche", "nombre": "Coche", "icono": "coches", "color": "#3B82F6" },
+    { "id": "cuotas_a_plazos", "nombre": "Cuotas a plazos", "icono": "prestamos", "color": "#F59E0B" },
+    { "id": "gasolina", "nombre": "Gasolina", "icono": "transporte", "color": "#EF4444" },
+    { "id": "hijos", "nombre": "Hij@s", "icono": "hijos", "color": "#F472B6" },
+    { "id": "inversiones", "nombre": "Inversiones", "icono": "inversiones", "color": "#10B981" },
+    { "id": "moto", "nombre": "Moto", "icono": "motos", "color": "#8B5CF6" },
+    { "id": "ocio", "nombre": "Ocio", "icono": "ocio", "color": "#EC4899" },
+    { "id": "personas_a_cargo", "nombre": "Personas a cargo", "icono": "hijos", "color": "#14B8A6" },
+    { "id": "ropa", "nombre": "Ropa", "icono": "compras", "color": "#A855F7" },
+    { "id": "seguros", "nombre": "Seguros", "icono": "ahorro", "color": "#06B6D4" },
+    { "id": "supermercado", "nombre": "Supermercado", "icono": "comida", "color": "#84CC16" },
+    { "id": "transporte", "nombre": "Transporte", "icono": "transporte", "color": "#0EA5E9" },
+    { "id": "uno_mismo", "nombre": "Uno mismo", "icono": "salud", "color": "#F97316" },
+    { "id": "vivienda", "nombre": "Vivienda", "icono": "hogar", "color": "#6366F1" }
+  ]
+}

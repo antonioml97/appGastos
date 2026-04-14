@@ -1,5 +1,5 @@
 import './bootstrap';
 import { createApp } from 'vue';
-import WelcomeApp from './components/WelcomeApp.vue';
+import AppShell from './components/layout/AppShell.vue';
 
-createApp(WelcomeApp).mount('#app');
+createApp(AppShell).mount('#app');

@@ -27,4 +27,12 @@ class Categoria extends Model
     {
         return $this->hasMany(Gasto::class, 'categoria_id');
     }
+
+    /**
+     * Obtiene los movimientos fijos asociados a la categoria.
+     */
+    public function movimientosFijos(): HasMany
+    {
+        return $this->hasMany(MovimientoFijo::class, 'categoria_id');
+    }
 }

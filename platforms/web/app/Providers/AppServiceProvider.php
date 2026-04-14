@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Contracts\Repositories\CategoryRepositoryInterface;
 use App\Contracts\Repositories\MonthlyReportRepositoryInterface;
 use App\Contracts\Repositories\YearlyReportRepositoryInterface;
+use App\Domain\Accounts\Subscribers\AccountBalanceSubscriber;
 use App\Repositories\EloquentCategoryRepository;
 use App\Repositories\EloquentMonthlyReportRepository;
 use App\Repositories\EloquentYearlyReportRepository;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
 
@@ -34,6 +36,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->ensureSqliteDatabaseExists();
+        Event::subscribe(AccountBalanceSubscriber::class);
     }
 
     /**

@@ -21,6 +21,8 @@
 @layer base {
     html {
         background: var(--color-ink);
+        width: 100%;
+        overflow-x: clip;
     }
 
     body {
@@ -31,14 +33,39 @@
             linear-gradient(180deg, #111a2c 0%, #0b1220 48%, #08101b 100%);
         color: var(--color-paper);
         font-family: var(--font-sans);
+        width: 100%;
+        overflow-x: clip;
     }
 
     #app {
         min-height: 100vh;
+        width: 100%;
+        overflow-x: clip;
+    }
+
+    a,
+    button,
+    input,
+    select,
+    textarea {
+        -webkit-tap-highlight-color: transparent;
     }
 }
 
 @layer components {
+    .app-toast {
+        top: 50%;
+        left: 50%;
+        right: auto;
+        bottom: auto;
+        box-sizing: border-box;
+        width: min(calc(100vw - 2rem), 34rem);
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+    }
+
     .toast-enter-active,
     .toast-leave-active {
         transition:
@@ -49,6 +76,6 @@
     .toast-enter-from,
     .toast-leave-to {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translate(-50%, calc(-50% + 12px)) scale(0.98);
     }
 }

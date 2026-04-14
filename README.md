@@ -1,43 +1,199 @@
 # AppGastos
 
-Repositorio organizado con una base compartida y tres plataformas:
+AppGastos es una aplicacion de control de gastos personales construida sobre una base compartida y preparada para ejecutarse en tres plataformas:
 
-- `shared`: codigo comun de la aplicacion
-- `platforms/web`: version web Laravel
-- `platforms/android`: version mobile con NativePHP Mobile
-- `platforms/desktop`: version escritorio con NativePHP Desktop
+- Web
+- Android / mobile
+- Desktop / Windows
 
-## Como esta organizado
+La idea central del proyecto es sencilla: la aplicacion real vive en `shared`, y cada plataforma tiene su propio wrapper dentro de `platforms`.
+
+## Vista rapida
+
+| Area | Estado actual |
+| --- | --- |
+| Arquitectura | `shared + platforms` |
+| Frontend | Vue 3 + Vite + Tailwind CSS 4 |
+| Backend | Laravel 12 + PHP 8.3 |
+| Base de datos | SQLite por plataforma |
+| Mobile | NativePHP Mobile 3 |
+| Desktop | NativePHP Desktop 2.1 |
+
+## Que incluye ahora mismo
+
+El proyecto ya incorpora estas funcionalidades:
+
+- panel principal
+- gestion de categorias
+- gastos mensuales
+- ingresos mensuales
+- resumen mensual
+- resumen anual
+- cuentas normales
+- cuentas de ahorro
+- retiradas desde ahorro
+- gastos fijos mensuales
+- ingresos fijos mensuales
+- omision de movimientos fijos en un mes concreto
+- exportacion a Excel
+- importacion desde Excel generado por la propia app
+- categorias base sincronizadas desde `shared/config.json`
+- mensajes de validacion legibles para usuario final
+
+## Arquitectura del repositorio
+
+```text
+AppGastos/
+|- shared/
+|- platforms/
+|  |- web/
+|  |- android/
+|  |- desktop/
+|- scripts/
+|- README.md
+```
 
 ### `shared`
 
-Aqui vive la logica comun de la app:
+Aqui vive la aplicacion real:
 
 - controladores
 - modelos
 - rutas
-- vistas
+- servicios de dominio
 - componentes Vue
+- vistas Blade
 - migraciones
+- configuracion compartida
 - tests
 
-Si cambias funcionalidad de la aplicacion, normalmente debes hacerlo en `shared`.
+Si vas a tocar logica, comportamiento, validaciones, pantallas o estructura funcional, lo normal es trabajar en `shared`.
 
 ### `platforms/web`
 
-Wrapper de la plataforma web. Tiene su propio entorno, dependencias y base de datos, pero reutiliza el codigo comun de `shared`.
+Wrapper de la version web.
+
+Tiene su propio:
+
+- `.env`
+- `vendor`
+- `node_modules`
+- `storage`
+- `database/database.sqlite`
 
 ### `platforms/android`
 
-Wrapper de la plataforma mobile. Usa `nativephp/mobile` y mantiene su propia configuracion nativa dentro de `nativephp/`.
+Wrapper mobile basado en NativePHP Mobile.
+
+Incluye:
+
+- entorno Laravel propio
+- proyecto Android nativo en `nativephp/android`
+- SQLite propia
+- bundle Laravel empaquetado dentro del APK
 
 ### `platforms/desktop`
 
-Wrapper de la plataforma escritorio. Usa `nativephp/desktop` para abrir la app como ejecutable y generar la version `.exe`.
+Wrapper de escritorio basado en NativePHP Desktop.
 
-## Requisitos generales
+Incluye:
 
-Antes de abrir cualquier plataforma necesitas tener instalado:
+- entorno Laravel propio
+- runtime desktop
+- SQLite propia
+- build para Windows `.exe`
+
+## Regla de trabajo recomendada
+
+Usa esta guia rapida:
+
+1. Implementa la funcionalidad en `shared`.
+2. Pruebala primero en `platforms/web`.
+3. Migra la plataforma que vayas a ejecutar.
+4. Valida despues en `android` o `desktop` si el cambio tambien les afecta.
+
+## Funcionalidades principales
+
+### Inicio
+
+- acceso rapido a las secciones clave
+- panel principal de navegacion
+
+### Categorias
+
+- crear categoria
+- editar categoria
+- borrar categoria
+- selector de color
+- selector de icono
+- categorias base por defecto desde configuracion compartida
+
+### Gastos e ingresos mensuales
+
+- alta, edicion y borrado de gastos
+- alta, edicion y borrado de ingresos
+- mensajes de error entendibles
+- resumen del mes
+- balance del mes
+- desglose por categoria
+
+### Resumen anual
+
+- resumen por ano
+- comparativa mensual
+- distribucion por categoria
+
+### Cuentas
+
+- cuentas normales
+- cuentas de ahorro
+- retiradas desde ahorro
+- persistencia mensual del saldo de cuenta normal
+
+La cuenta normal ya no depende solo de un saldo global: el proyecto guarda el comportamiento mensual para que cada mes pueda apoyarse en el cierre del anterior y aplicar bien ingresos y gastos del mes actual.
+
+### Movimientos fijos mensuales
+
+- crear gastos fijos
+- crear ingresos fijos
+- editar movimientos fijos
+- activar o desactivar movimientos fijos
+- generar automaticamente los movimientos del mes
+- omitir un movimiento fijo solo en un mes concreto si se borra desde el mes
+
+### Configuracion compartida
+
+- categorias base cargadas desde `shared/config.json`
+- sincronizacion reutilizable entre plataformas
+
+### Excel
+
+- exportacion de datos
+- importacion desde archivos exportados por la propia app
+
+## Base de datos
+
+Cada wrapper usa su propia base SQLite.
+
+Eso significa que las migraciones deben ejecutarse por separado en:
+
+- `platforms/web`
+- `platforms/android`
+- `platforms/desktop`
+
+Entre las migraciones actuales ya existen tablas o relaciones para:
+
+- categorias
+- gastos
+- ingresos
+- cuentas
+- movimientos fijos
+- excepciones mensuales de movimientos fijos
+- saldos mensuales de cuentas normales
+
+## Requisitos
+
+Necesitas como base:
 
 - PHP 8.3 o superior
 - Composer
@@ -46,154 +202,135 @@ Antes de abrir cualquier plataforma necesitas tener instalado:
 
 Ademas:
 
-- para Android: Android Studio o toolchain Android configurado
-- para Desktop: entorno compatible con NativePHP Desktop en Windows
+- Android Studio o toolchain Android para la version mobile
+- entorno compatible con NativePHP Desktop para la version Windows
 
-## Regla rapida
-
-- cambias la app: `shared`
-- abres la web: `platforms/web`
-- abres mobile: `platforms/android`
-- abres desktop: `platforms/desktop`
-
-## Instalacion y apertura por plataforma
+## Instalacion por plataforma
 
 ### Web
 
-Carpeta:
+Directorio de trabajo:
 
-- `C:\Users\genericoRS\Desktop\AppGastos\platforms\web`
+`C:\Users\genericoRS\Desktop\AppGastos\platforms\web`
 
-#### Instalar
+Instalacion:
 
 ```powershell
 cd C:\Users\genericoRS\Desktop\AppGastos\platforms\web
 composer install
 copy .env.example .env
 php artisan key:generate
-if (!(Test-Path database/database.sqlite)) { New-Item -ItemType File -Path database/database.sqlite | Out-Null }
 php artisan migrate
 npm install
 ```
 
-Tambien puedes usar el script rapido:
+Abrir en desarrollo:
 
 ```powershell
-cd C:\Users\genericoRS\Desktop\AppGastos\platforms\web
-composer run setup
+php artisan serve
 ```
 
-#### Abrir
-
-Para abrir la version web en desarrollo:
-
-```powershell
-cd C:\Users\genericoRS\Desktop\AppGastos\platforms\web
-composer run dev
-```
-
-Eso levanta Laravel, cola, logs y Vite.
-
-Si solo quieres el frontend:
+En otra terminal:
 
 ```powershell
 npm run dev
 ```
 
+Build:
+
+```powershell
+npm run build
+```
+
 ### Android / Mobile
 
-Carpeta:
+Directorio de trabajo:
 
-- `C:\Users\genericoRS\Desktop\AppGastos\platforms\android`
+`C:\Users\genericoRS\Desktop\AppGastos\platforms\android`
 
-#### Instalar
+Instalacion:
 
 ```powershell
 cd C:\Users\genericoRS\Desktop\AppGastos\platforms\android
 composer install
 copy .env.example .env
 php artisan key:generate
-if (!(Test-Path database/database.sqlite)) { New-Item -ItemType File -Path database/database.sqlite | Out-Null }
 php artisan migrate
 npm install
 ```
 
-Tambien puedes usar:
+Abrir en desarrollo:
+
+```powershell
+php artisan native:run android --build=debug
+```
+
+### APK debug actualizado
+
+Si quieres sacar un APK debug para instalarlo manualmente:
 
 ```powershell
 cd C:\Users\genericoRS\Desktop\AppGastos\platforms\android
-composer run setup
+php artisan optimize:clear
+npm run build
+php artisan native:run android --build=debug
+cd nativephp\android
+.\gradlew.bat assembleDebug
 ```
 
-#### Abrir
+APK generado:
 
-Para abrir la app mobile en desarrollo:
+`C:\Users\genericoRS\Desktop\AppGastos\platforms\android\nativephp\android\app\build\outputs\apk\debug\app-debug.apk`
 
-```powershell
-cd C:\Users\genericoRS\Desktop\AppGastos\platforms\android
-php artisan native:run android
-```
+Importante:
 
-Comandos utiles:
+- `.\gradlew.bat assembleDebug` por si solo no siempre basta
+- primero hay que regenerar el bundle Laravel que entra en Android
+- la forma segura es ejecutar antes `php artisan native:run android --build=debug`
 
-```powershell
-php artisan native:version
-php artisan native:package android
-php native run android
-```
+### Release Android firmada
+
+Si algun dia quieres paquete firmado para distribucion, `php artisan native:package android` exige configuracion de firma:
+
+- `ANDROID_KEYSTORE_FILE`
+- `ANDROID_KEYSTORE_PASSWORD`
+- `ANDROID_KEY_ALIAS`
+- `ANDROID_KEY_PASSWORD`
 
 ### Desktop
 
-Carpeta:
+Directorio de trabajo:
 
-- `C:\Users\genericoRS\Desktop\AppGastos\platforms\desktop`
+`C:\Users\genericoRS\Desktop\AppGastos\platforms\desktop`
 
-#### Instalar
+Instalacion:
 
 ```powershell
 cd C:\Users\genericoRS\Desktop\AppGastos\platforms\desktop
 composer install
 copy .env.example .env
 php artisan key:generate
-if (!(Test-Path database/database.sqlite)) { New-Item -ItemType File -Path database/database.sqlite | Out-Null }
 php artisan migrate
 npm install
 php artisan native:install
 ```
 
-Tambien puedes usar el setup del wrapper:
+Abrir en desarrollo:
 
 ```powershell
-cd C:\Users\genericoRS\Desktop\AppGastos\platforms\desktop
-composer run setup
-```
-
-#### Abrir
-
-Para abrir la app de escritorio en desarrollo:
-
-```powershell
-cd C:\Users\genericoRS\Desktop\AppGastos\platforms\desktop
 php artisan native:run
 ```
 
-Si quieres abrir el flujo con Vite en paralelo:
-
-```powershell
-cd C:\Users\genericoRS\Desktop\AppGastos\platforms\desktop
-composer run native:dev
-```
-
-Para generar build de escritorio:
+Build y publicacion:
 
 ```powershell
 php artisan native:build win x64
 php artisan native:publish win x64
 ```
 
-## Regenerar wrappers
+## Scripts de soporte
 
-Si los enlaces a `shared` se rompen o quieres reconstruir una plataforma:
+Si necesitas reconstruir wrappers o reestablecer enlaces con `shared`:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/setup-web-wrapper.ps1
@@ -201,8 +338,104 @@ powershell -ExecutionPolicy Bypass -File scripts/setup-android-wrapper.ps1
 powershell -ExecutionPolicy Bypass -File scripts/setup-desktop-wrapper.ps1
 ```
 
-## Punto de partida recomendado
+Estos scripts sirven para volver a enlazar recursos compartidos como:
 
-1. Cambia la funcionalidad en `shared`.
-2. Instala la plataforma que quieras usar dentro de su carpeta en `platforms`.
-3. Abrela con el comando correspondiente de esa misma carpeta.
+- codigo base
+- configuracion comun
+- `config.json`
+
+## Archivos importantes
+
+- [README.md](C:\Users\genericoRS\Desktop\AppGastos\README.md)
+- [shared](C:\Users\genericoRS\Desktop\AppGastos\shared)
+- [shared/config.json](C:\Users\genericoRS\Desktop\AppGastos\shared\config.json)
+- [shared/routes/web.php](C:\Users\genericoRS\Desktop\AppGastos\shared\routes\web.php)
+- [shared/app/Http/Controllers](C:\Users\genericoRS\Desktop\AppGastos\shared\app\Http\Controllers)
+- [shared/app/Models](C:\Users\genericoRS\Desktop\AppGastos\shared\app\Models)
+- [shared/resources/js/components](C:\Users\genericoRS\Desktop\AppGastos\shared\resources\js\components)
+- [platforms/web](C:\Users\genericoRS\Desktop\AppGastos\platforms\web)
+- [platforms/android](C:\Users\genericoRS\Desktop\AppGastos\platforms\android)
+- [platforms/desktop](C:\Users\genericoRS\Desktop\AppGastos\platforms\desktop)
+- [scripts](C:\Users\genericoRS\Desktop\AppGastos\scripts)
+
+## Versiones
+
+### Version 1.0
+
+Base inicial del proyecto con:
+
+- categorias
+- gastos
+- ingresos
+- resumen mensual
+- estructura original de una sola aplicacion
+
+### Version 2.0
+
+Salto a arquitectura por plataformas:
+
+- `shared + platforms`
+- version web
+- version mobile
+- version desktop
+- resumen anual
+- mejoras de interfaz
+- validaciones mas claras
+
+### Estado funcional actual sobre 2.x
+
+Sobre esa base, el repositorio ya suma tambien:
+
+- exportacion e importacion Excel
+- cuentas normales y de ahorro
+- movimientos fijos mensuales
+- excepciones mensuales para movimientos fijos borrados desde el mes
+- categorias base compartidas
+- persistencia mensual del saldo de cuenta normal
+- mejoras de arranque en mobile
+
+## Git y releases
+
+Si quieres que una version quede visible en GitHub, el flujo normal es:
+
+1. hacer commit
+2. crear tag
+3. subir la rama
+4. subir el tag
+
+Ejemplo:
+
+```powershell
+git add .
+git commit -m "release: v2.0.0"
+git tag -a v2.0.0 -m "AppGastos 2.0"
+git push origin main
+git push origin v2.0.0
+```
+
+Convencion util:
+
+- `2.0.1` para correcciones
+- `2.1.0` para nuevas funcionalidades compatibles
+- `3.0.0` para cambios grandes o incompatibles
+
+## Nota para Windows
+
+`composer run dev` puede fallar por dependencias como `Pail`, ya que `pcntl` no esta disponible en Windows.
+
+Si pasa eso, usa:
+
+```powershell
+php artisan serve
+npm run dev
+```
+
+## Resumen practico
+
+Si quieres quedarte con una sola idea del proyecto, es esta:
+
+- se desarrolla en `shared`
+- cada plataforma corre con su propio entorno y su propia SQLite
+- primero se prueba en web
+- luego se valida en mobile o desktop
+- en Android hay que regenerar bien el bundle antes de sacar APK si quieres ver cambios reales

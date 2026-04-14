@@ -72,7 +72,8 @@ $sharedDirectories = @(
     'database\factories',
     'database\migrations',
     'database\seeders',
-    'public\build'
+    'public\build',
+    'public\images\icons'
 )
 
 foreach ($relativePath in $sharedDirectories) {
@@ -89,6 +90,7 @@ $sharedFiles = @(
     '.editorconfig',
     '.gitattributes',
     'artisan',
+    'config.json',
     'package.json',
     'package-lock.json',
     'vite.config.js',

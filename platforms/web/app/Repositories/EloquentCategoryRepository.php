@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Contracts\Repositories\CategoryRepositoryInterface;
 use App\Models\Categoria;
+use App\Support\BaseCategoryConfig;
 use App\Support\CategoryIconCatalog;
 
 /**
@@ -72,12 +73,16 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
      */
     private function serializeCategory(Categoria $categoria): array
     {
+        $isBaseCategory = BaseCategoryConfig::isBaseCategory($categoria);
+
         return [
             'id' => $categoria->id,
             'nombre' => $categoria->nombre,
             'color' => $categoria->color,
             'icono' => $categoria->icono,
             'gastos_count' => $categoria->gastos_count,
+            'is_base' => $isBaseCategory,
+            'can_delete' => ! $isBaseCategory,
         ];
     }
 }
