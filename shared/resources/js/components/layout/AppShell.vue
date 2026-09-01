@@ -62,7 +62,7 @@
                 <h1 class="font-[var(--font-display)] text-2xl font-semibold sm:text-3xl">{{ pageTitle }}</h1>
             </div>
 
-            <HomePage v-if="page === 'home'" :menu-items="menuItems" :state="home" :user="currentUser" />
+            <HomePage v-if="page === 'home'" :menu-items="menuItems" :state="home" :user="currentUser" @change-month="changeHomeMonth" />
 
             <CategoriesPage
                 v-else-if="page === 'categories'"
@@ -307,6 +307,21 @@ async function changeMonth() {
     await reloadCurrentPage(url);
 }
 
+async function changeHomeMonth(selectedMonth) {
+    if (!/^\d{4}-\d{2}$/.test(selectedMonth)) return;
+
+    const url = `/?mes=${selectedMonth}`;
+    home.selectedMonthValue = selectedMonth;
+    history.replaceState({}, '', url);
+    currentPath.value = '/';
+
+    try {
+        await reloadCurrentPage(url);
+    } catch (error) {
+        showNotice('error', extractErrors(error)[0] ?? 'No se pudo cargar el mes seleccionado.');
+    }
+}
+
 async function changeYear() {
     const url = `/gastos-anuales?anio=${yearly.selectedYear}`;
     history.replaceState({}, '', url);
@@ -461,7 +476,7 @@ async function deleteIncome(ingreso) {
 
 async function reloadCurrentPage(url = `${window.location.pathname}${window.location.search}`) {
     const parsedUrl = new URL(url, window.location.origin);
-    const endpoint = parsedUrl.pathname === '/' ? '/dashboard' : `${parsedUrl.pathname}${parsedUrl.search}`;
+    const endpoint = parsedUrl.pathname === '/' ? `/dashboard${parsedUrl.search}` : `${parsedUrl.pathname}${parsedUrl.search}`;
     const { data } = await window.api.get(endpoint);
     hydrate(data);
 }

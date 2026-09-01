@@ -26,16 +26,17 @@ class EloquentYearlyReportRepository implements YearlyReportRepositoryInterface
         $selectedYear = $this->resolveYear($year);
         $yearStart = Carbon::create($selectedYear, 1, 1)->startOfDay();
         $yearEnd = $yearStart->copy()->endOfYear();
+        $monthExpression = $this->monthExpression();
 
         $gastosPorMes = Gasto::query()
-            ->selectRaw('strftime("%m", fecha) as mes')
+            ->selectRaw("{$monthExpression} as mes")
             ->selectRaw('SUM(importe) as total')
             ->whereBetween('fecha', [$yearStart->toDateString(), $yearEnd->toDateString()])
             ->groupBy('mes')
             ->pluck('total', 'mes');
 
         $ingresosPorMes = Ingreso::query()
-            ->selectRaw('strftime("%m", fecha) as mes')
+            ->selectRaw("{$monthExpression} as mes")
             ->selectRaw('SUM(importe) as total')
             ->whereBetween('fecha', [$yearStart->toDateString(), $yearEnd->toDateString()])
             ->groupBy('mes')
@@ -43,9 +44,8 @@ class EloquentYearlyReportRepository implements YearlyReportRepositoryInterface
 
         $monthly = collect(range(1, 12))
             ->map(function (int $month) use ($selectedYear, $gastosPorMes, $ingresosPorMes) {
-                $monthKey = str_pad((string) $month, 2, '0', STR_PAD_LEFT);
-                $expense = round((float) ($gastosPorMes[$monthKey] ?? 0), 2);
-                $income = round((float) ($ingresosPorMes[$monthKey] ?? 0), 2);
+                $expense = round((float) ($gastosPorMes[$month] ?? 0), 2);
+                $income = round((float) ($ingresosPorMes[$month] ?? 0), 2);
 
                 return [
                     'month' => $month,
@@ -118,6 +118,19 @@ class EloquentYearlyReportRepository implements YearlyReportRepositoryInterface
         return collect(range($startYear, $endYear))
             ->reverse()
             ->values();
+    }
+
+    /**
+     * Devuelve la expresion SQL para obtener el numero de mes en cada motor.
+     */
+    private function monthExpression(): string
+    {
+        return match (DB::connection()->getDriverName()) {
+            'pgsql' => 'CAST(EXTRACT(MONTH FROM fecha) AS INTEGER)',
+            'mysql', 'mariadb' => 'MONTH(fecha)',
+            'sqlsrv' => 'DATEPART(MONTH, fecha)',
+            default => "CAST(strftime('%m', fecha) AS INTEGER)",
+        };
     }
 
     /**

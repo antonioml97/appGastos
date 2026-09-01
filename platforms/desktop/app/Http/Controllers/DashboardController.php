@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Contracts\Repositories\MonthlyReportRepositoryInterface;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function __invoke(MonthlyReportRepositoryInterface $monthlyReports): JsonResponse
+    public function __invoke(Request $request, MonthlyReportRepositoryInterface $monthlyReports): JsonResponse
     {
-        $monthlyPayload = $monthlyReports->getPayload(null);
+        $month = $request->query('mes');
+        $monthlyPayload = $monthlyReports->getPayload(is_string($month) ? $month : null);
 
         return response()->json([
             'page' => 'home',

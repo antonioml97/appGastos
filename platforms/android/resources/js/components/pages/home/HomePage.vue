@@ -13,15 +13,20 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2 self-start rounded-full border border-white/[0.07] bg-[#071526] px-4 py-2 text-xs text-white/70 sm:self-auto">
-                <span aria-hidden="true">▣</span>
-                <span class="capitalize">{{ localState.selectedMonthLabel }}</span>
-                <span class="text-white/35">⌄</span>
+            <div class="flex items-center gap-1 self-start rounded-full border border-white/[0.07] bg-[#071526] p-1 text-xs text-white/70 sm:self-auto">
+                <button type="button" class="grid size-8 place-items-center rounded-full text-base text-white/55 transition hover:bg-white/5 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-300" aria-label="Mes anterior" @click="moveMonth(-1)">‹</button>
+                <label class="relative flex min-w-[9.75rem] cursor-pointer items-center justify-center gap-2 rounded-full px-2 py-2 transition hover:bg-white/5">
+                    <span aria-hidden="true">▣</span>
+                    <span class="capitalize">{{ localState.selectedMonthLabel }}</span>
+                    <input :value="localState.selectedMonthValue" type="month" class="absolute inset-0 h-full w-full cursor-pointer opacity-0" aria-label="Seleccionar mes" @change="selectMonth($event.target.value)">
+                </label>
+                <button type="button" class="grid size-8 place-items-center rounded-full text-base text-white/55 transition hover:bg-white/5 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-300" aria-label="Mes siguiente" @click="moveMonth(1)">›</button>
             </div>
         </div>
 
         <div class="grid gap-3 lg:grid-cols-12">
-            <article class="panel relative min-h-36 overflow-hidden p-5 sm:p-6 lg:col-span-4">
+            <div class="grid gap-3 sm:grid-cols-2 lg:col-span-12 lg:grid-cols-3 xl:grid-cols-[minmax(19rem,2fr)_repeat(5,minmax(0,1fr))]">
+            <article class="panel relative min-h-36 overflow-hidden p-5 sm:col-span-2 sm:p-6 lg:col-span-3 xl:col-span-1">
                 <div class="relative z-10">
                     <p class="flex items-center gap-2 text-sm text-white/75">Balance actual <span class="text-xs text-white/40">ⓘ</span></p>
                     <p class="mt-3 font-[var(--font-display)] text-4xl font-semibold tracking-tight text-white sm:text-5xl">
@@ -45,7 +50,7 @@
                 </svg>
             </article>
 
-            <article v-for="card in summaryCards" :key="card.label" class="panel relative min-h-36 overflow-hidden p-5 lg:col-span-2">
+            <article v-for="card in summaryCards" :key="card.label" class="panel relative min-h-36 overflow-hidden p-5">
                 <div class="flex items-center gap-3.5">
                     <span class="grid h-10 w-10 place-items-center rounded-full border text-lg font-medium" :class="card.badgeClass">{{ card.icon }}</span>
                     <p class="text-sm font-medium text-white/65 sm:text-base">{{ card.label }}</p>
@@ -54,6 +59,7 @@
                 <p class="mt-2 text-[11px] text-white/45"><span :class="card.accentClass">{{ card.captionLead }}</span> {{ card.caption }}</p>
                 <div class="absolute inset-x-0 bottom-0 h-8 opacity-70" :class="card.waveClass"></div>
             </article>
+            </div>
 
             <article class="panel p-5 lg:col-span-5">
                 <div class="flex items-center justify-between gap-4">
@@ -179,6 +185,8 @@ const props = defineProps({
     user: { type: Object, default: null },
 });
 
+const emit = defineEmits(['change-month']);
+
 const localState = computed(() => props.state);
 const firstName = computed(() => props.user?.name?.trim()?.split(/\s+/)[0] ?? '');
 const monthName = computed(() => localState.value.selectedMonthLabel?.split(' ')[0] ?? 'este mes');
@@ -198,8 +206,22 @@ const summaryCards = computed(() => [
     { label: 'Ingresos', value: formatCurrency(incomes.value), icon: '↓', badgeClass: 'border-emerald-400/25 bg-emerald-400/10 text-emerald-400', accentClass: 'text-emerald-400', captionLead: '↑ total', caption: 'del mes', waveClass: 'bg-[linear-gradient(170deg,transparent_45%,rgba(16,185,129,.12)_46%)]' },
     { label: 'Gastos', value: formatCurrency(expenses.value), icon: '↗', badgeClass: 'border-rose-400/25 bg-rose-400/10 text-rose-400', accentClass: 'text-rose-400', captionLead: `${expenseRatio.value}`, caption: 'de ingresos', waveClass: 'bg-[linear-gradient(170deg,transparent_45%,rgba(244,63,94,.12)_46%)]' },
     { label: 'Cuenta normal', value: formatCurrency(localState.value.accountsSummary?.normal), icon: '▣', badgeClass: 'border-cyan-400/25 bg-cyan-400/10 text-cyan-400', accentClass: 'text-cyan-400', captionLead: 'Disponible', caption: 'en la cuenta', waveClass: 'bg-[linear-gradient(170deg,transparent_45%,rgba(34,211,238,.12)_46%)]' },
+    { label: 'Ahorro', value: formatCurrency(localState.value.accountsSummary?.ahorro), icon: '☆', badgeClass: 'border-teal-400/25 bg-teal-400/10 text-teal-300', accentClass: 'text-teal-300', captionLead: 'Total', caption: 'ahorrado', waveClass: 'bg-[linear-gradient(170deg,transparent_45%,rgba(45,212,191,.12)_46%)]' },
     { label: 'Inversiones', value: formatCurrency(investments.value), icon: '◈', badgeClass: 'border-violet-400/25 bg-violet-400/10 text-violet-400', accentClass: 'text-violet-400', captionLead: '↑ acumulado', caption: 'este mes', waveClass: 'bg-[linear-gradient(170deg,transparent_45%,rgba(139,92,246,.14)_46%)]' },
 ]);
+
+function selectMonth(value) {
+    if (/^\d{4}-\d{2}$/.test(value)) emit('change-month', value);
+}
+
+function moveMonth(offset) {
+    const [year, month] = String(localState.value.selectedMonthValue ?? '').split('-').map(Number);
+    const selectedDate = Number.isInteger(year) && Number.isInteger(month)
+        ? new Date(year, month - 1 + offset, 1)
+        : new Date(new Date().getFullYear(), new Date().getMonth() + offset, 1);
+
+    emit('change-month', `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}`);
+}
 
 const accounts = computed(() => [
     { label: 'Cuenta normal', value: formatCurrency(localState.value.accountsSummary?.normal), caption: 'Disponible', icon: '▣' },
