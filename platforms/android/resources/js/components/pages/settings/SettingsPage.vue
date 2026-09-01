@@ -1,6 +1,6 @@
 <template>
     <section id="settings-overview" class="settings-page app-page grid min-w-0 gap-4 lg:grid-cols-[13rem_minmax(0,1fr)]">
-        <nav class="settings-sidebar lg:sticky lg:top-24 lg:self-start" aria-label="Secciones de configuración">
+        <nav class="settings-sidebar sticky top-0 z-20 -mx-1 bg-[var(--color-ink)]/95 px-1 py-2 backdrop-blur-xl lg:top-24 lg:mx-0 lg:self-start lg:bg-transparent lg:px-0 lg:py-0 lg:backdrop-blur-none" aria-label="Secciones de configuración">
             <p class="hidden text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--color-mint)] lg:block">Configuración</p>
             <div class="scrollbar-none flex gap-2 overflow-x-auto pb-1 lg:mt-4 lg:flex-col lg:overflow-visible">
                 <button
@@ -9,7 +9,7 @@
                     type="button"
                     :class="activeSettingsSection === item.id ? 'border-[var(--color-mint)]/35 bg-[var(--color-mint)]/10 text-white' : 'border-transparent text-white/55 hover:bg-white/5 hover:text-white'"
                     class="flex min-h-11 shrink-0 items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm font-medium transition lg:w-full"
-                    @click="scrollToSettingsSection(item.id)"
+                    @click="selectSettingsSection(item.id)"
                 >
                     <span class="text-base text-[var(--color-mint)]" aria-hidden="true">{{ item.icon }}</span>
                     {{ item.label }}
@@ -17,15 +17,44 @@
             </div>
         </nav>
 
-        <div class="settings-content min-w-0">
+        <div id="settings-content" class="settings-content min-w-0">
             <header class="mb-5">
                 <h1 class="font-[var(--font-display)] text-3xl font-semibold text-white">Configuración</h1>
                 <p class="mt-1 text-sm text-white/50">Gestiona tus cuentas, automatizaciones, seguridad y datos.</p>
             </header>
 
-            <div class="grid min-w-0 gap-3 xl:grid-cols-[1.12fr_0.88fr]">
-        <section class="min-w-0 space-y-3">
-            <section id="settings-accounts" class="scroll-mt-28 overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(48,214,169,0.12),rgba(255,255,255,0.03))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
+            <section v-if="activeSettingsSection === 'settings-overview'" class="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(48,214,169,0.1),rgba(255,255,255,0.025))] p-6 shadow-xl shadow-black/10 sm:p-8">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--color-mint)]">General</p>
+                <h2 class="mt-3 font-[var(--font-display)] text-2xl font-semibold text-white sm:text-3xl">¿Qué quieres configurar?</h2>
+                <p class="mt-2 max-w-2xl text-sm leading-7 text-white/55">Elige una sección para gestionar únicamente esa parte de la aplicación.</p>
+
+                <div class="mt-6 grid gap-3 sm:grid-cols-2">
+                    <button type="button" class="group rounded-2xl border border-white/10 bg-black/10 p-5 text-left transition hover:border-[var(--color-mint)]/30 hover:bg-[var(--color-mint)]/7" @click="selectSettingsSection('settings-accounts')">
+                        <span class="grid h-10 w-10 place-items-center rounded-xl bg-[var(--color-mint)]/12 text-xl text-[var(--color-mint)]" aria-hidden="true">▣</span>
+                        <span class="mt-4 block text-base font-semibold text-white">Cuentas</span>
+                        <span class="mt-1 block text-sm text-white/50">{{ accounts.length }} configuradas · saldos y ahorro</span>
+                    </button>
+                    <button type="button" class="group rounded-2xl border border-white/10 bg-black/10 p-5 text-left transition hover:border-[var(--color-gold)]/30 hover:bg-[var(--color-gold)]/7" @click="selectSettingsSection('settings-fixed')">
+                        <span class="grid h-10 w-10 place-items-center rounded-xl bg-[var(--color-gold)]/12 text-xl text-[var(--color-gold)]" aria-hidden="true">▤</span>
+                        <span class="mt-4 block text-base font-semibold text-white">Movimientos fijos</span>
+                        <span class="mt-1 block text-sm text-white/50">{{ fixedEntries.length }} guardados · automatizaciones</span>
+                    </button>
+                    <button type="button" class="group rounded-2xl border border-white/10 bg-black/10 p-5 text-left transition hover:border-cyan-300/30 hover:bg-cyan-300/5" @click="selectSettingsSection('settings-security')">
+                        <span class="grid h-10 w-10 place-items-center rounded-xl bg-cyan-300/10 text-xl text-cyan-300" aria-hidden="true">▢</span>
+                        <span class="mt-4 block text-base font-semibold text-white">Seguridad</span>
+                        <span class="mt-1 block text-sm text-white/50">Contraseña y acceso a tu cuenta</span>
+                    </button>
+                    <button type="button" class="group rounded-2xl border border-white/10 bg-black/10 p-5 text-left transition hover:border-violet-300/30 hover:bg-violet-300/5" @click="selectSettingsSection('settings-data')">
+                        <span class="grid h-10 w-10 place-items-center rounded-xl bg-violet-300/10 text-xl text-violet-300" aria-hidden="true">◉</span>
+                        <span class="mt-4 block text-base font-semibold text-white">Datos</span>
+                        <span class="mt-1 block text-sm text-white/50">Importación, exportación y borrado</span>
+                    </button>
+                </div>
+            </section>
+
+            <div v-else class="min-w-0">
+        <section v-if="activeSettingsSection === 'settings-accounts' || activeSettingsSection === 'settings-fixed'" class="min-w-0 space-y-3">
+            <section v-show="activeSettingsSection === 'settings-accounts'" id="settings-accounts" class="scroll-mt-28 overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(48,214,169,0.12),rgba(255,255,255,0.03))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <p class="text-sm uppercase tracking-[0.32em] text-[var(--color-mint)]/85">Cuentas</p>
@@ -107,58 +136,61 @@
                     <article
                         v-for="account in accounts"
                         :key="account.id"
-                        class="rounded-[1.6rem] border border-white/10 bg-[var(--color-ink-soft)]/55 p-5"
+                        class="group flex min-w-0 flex-col rounded-[1.6rem] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] p-5 transition hover:border-white/15"
                     >
-                        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                        <div class="flex min-w-0 items-start justify-between gap-3">
                             <div class="min-w-0">
-                                <div class="flex flex-wrap items-center gap-3">
-                                    <span
-                                        :class="account.tipo === 'ahorro' ? 'bg-[var(--color-mint)]/14 text-[var(--color-mint)]' : 'bg-white/10 text-white/75'"
-                                        class="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]"
-                                    >
-                                        {{ account.tipo === 'ahorro' ? 'Ahorro' : 'Normal' }}
-                                    </span>
-                                    <span class="rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-white/60">
-                                        Inicial {{ formatCurrency(account.saldo_inicial) }}
-                                    </span>
-                                </div>
-
-                                <h4 class="mt-4 text-xl font-semibold text-white">{{ account.nombre }}</h4>
-                                <p class="mt-2 text-sm text-white/65">
-                                    Saldo actual {{ formatCurrency(account.saldo_actual) }}
-                                </p>
+                                <span
+                                    :class="account.tipo === 'ahorro' ? 'bg-[var(--color-mint)]/14 text-[var(--color-mint)]' : 'bg-white/10 text-white/70'"
+                                    class="inline-flex rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em]"
+                                >
+                                    {{ account.tipo === 'ahorro' ? 'Ahorro' : 'Normal' }}
+                                </span>
+                                <h4 class="mt-3 text-lg font-semibold leading-snug text-white">{{ account.nombre }}</h4>
                             </div>
 
-                            <div class="w-full max-w-md space-y-4">
-                                <div v-if="account.tipo === 'ahorro'" class="rounded-[1.35rem] border border-white/10 bg-white/6 p-4">
-                                    <p class="text-xs uppercase tracking-[0.2em] text-white/50">Retirar ahorro</p>
-                                    <div class="mt-3 flex flex-col gap-3 sm:flex-row">
-                                        <input
-                                            v-model="withdrawForms[account.id]"
-                                            type="number"
-                                            min="0.01"
-                                            step="0.01"
-                                            placeholder="Cantidad"
-                                            class="w-full rounded-2xl border border-white/10 bg-black/10 px-4 py-3 text-white outline-none transition placeholder:text-white/35 focus:border-[var(--color-mint)]"
-                                        >
-                                        <button
-                                            type="button"
-                                            class="rounded-2xl bg-[var(--color-danger)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110"
-                                            @click="withdrawFromAccount(account)"
-                                        >
-                                            Quitar cantidad
-                                        </button>
-                                    </div>
-                                </div>
+                            <div class="flex shrink-0 items-center gap-2">
+                                <button type="button" class="rounded-xl border border-white/10 bg-white/7 px-3 py-2 text-xs font-semibold text-white/85 transition hover:bg-white/12 hover:text-white" @click="startEditAccount(account)">
+                                    Editar
+                                </button>
+                                <button type="button" class="rounded-xl border border-[var(--color-danger)]/35 bg-[var(--color-danger)]/12 px-3 py-2 text-xs font-semibold text-red-300 transition hover:bg-[var(--color-danger)] hover:text-white" @click="$emit('delete-account', account)">
+                                    Borrar
+                                </button>
+                            </div>
+                        </div>
 
-                                <div class="flex flex-wrap gap-3">
-                                    <button type="button" class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/12" @click="startEditAccount(account)">
-                                        Editar
-                                    </button>
-                                    <button type="button" class="rounded-2xl bg-[var(--color-danger)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-90" @click="$emit('delete-account', account)">
-                                        Borrar
-                                    </button>
+                        <div class="mt-5 rounded-2xl border border-white/8 bg-black/10 px-4 py-3.5">
+                            <div class="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+                                <div>
+                                    <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/45">Saldo actual</p>
+                                    <p class="mt-1 whitespace-nowrap text-[clamp(1.35rem,2.5vw,1.7rem)] font-semibold leading-none text-white">{{ formatCurrency(account.saldo_actual) }}</p>
                                 </div>
+                                <div class="text-left sm:text-right">
+                                    <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/40">Saldo inicial</p>
+                                    <p class="mt-1 whitespace-nowrap text-sm font-medium text-white/65">{{ formatCurrency(account.saldo_inicial) }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="account.tipo === 'ahorro'" class="mt-3 rounded-2xl border border-[var(--color-mint)]/15 bg-[var(--color-mint)]/5 p-3.5">
+                            <label :for="`withdraw-${account.id}`" class="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--color-mint)]/75">Retirar del ahorro</label>
+                            <div class="mt-2 grid min-w-0 grid-cols-[minmax(0,1fr)_auto] gap-2">
+                                <input
+                                    :id="`withdraw-${account.id}`"
+                                    v-model="withdrawForms[account.id]"
+                                    type="number"
+                                    min="0.01"
+                                    step="0.01"
+                                    placeholder="Cantidad en €"
+                                    class="min-w-0 rounded-xl border border-white/10 bg-black/15 px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[var(--color-mint)]"
+                                >
+                                <button
+                                    type="button"
+                                    class="rounded-xl bg-[var(--color-mint)] px-4 py-2.5 text-sm font-bold text-[var(--color-ink)] transition hover:brightness-105"
+                                    @click="withdrawFromAccount(account)"
+                                >
+                                    Retirar
+                                </button>
                             </div>
                         </div>
                     </article>
@@ -166,7 +198,7 @@
                 </div>
             </section>
 
-            <section id="settings-fixed" class="scroll-mt-28 overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
+            <section v-show="activeSettingsSection === 'settings-fixed'" id="settings-fixed" class="scroll-mt-28 overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <p class="text-sm uppercase tracking-[0.32em] text-[var(--color-gold)]/85">Configuración</p>
@@ -243,7 +275,7 @@
                 </form>
             </section>
 
-            <section class="overflow-hidden rounded-[2rem] border border-white/10 bg-white/6 p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
+            <section v-show="activeSettingsSection === 'settings-fixed'" class="overflow-hidden rounded-[2rem] border border-white/10 bg-white/6 p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <p class="text-sm uppercase tracking-[0.28em] text-[var(--color-mint)]/85">Listado</p>
@@ -314,12 +346,12 @@
             </section>
         </section>
 
-        <aside class="min-w-0 space-y-3">
-            <div id="settings-security" class="scroll-mt-28 space-y-3">
+        <aside v-if="activeSettingsSection === 'settings-security' || activeSettingsSection === 'settings-data'" class="min-w-0 space-y-3">
+            <div v-show="activeSettingsSection === 'settings-security'" id="settings-security" class="scroll-mt-28 space-y-3">
                 <AccountSecurityPanel @user-deleted="emit('user-deleted', $event)" />
             </div>
 
-            <section id="settings-data" class="scroll-mt-28 overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
+            <section v-show="activeSettingsSection === 'settings-data'" id="settings-data" class="scroll-mt-28 overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <p class="text-sm uppercase tracking-[0.32em] text-[var(--color-gold)]/85">Excel</p>
@@ -393,7 +425,7 @@
                 </div>
             </section>
 
-            <section class="overflow-hidden rounded-[2rem] border border-rose-400/30 bg-[linear-gradient(145deg,rgba(244,63,94,0.16),rgba(255,255,255,0.03))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
+            <section v-show="activeSettingsSection === 'settings-data'" class="overflow-hidden rounded-[2rem] border border-rose-400/30 bg-[linear-gradient(145deg,rgba(244,63,94,0.16),rgba(255,255,255,0.03))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <p class="text-sm uppercase tracking-[0.32em] text-rose-200/85">Zona de peligro</p>
@@ -493,9 +525,8 @@ const settingsNavItems = [
     { id: 'settings-data', label: 'Datos', icon: '◉' },
 ];
 
-function scrollToSettingsSection(sectionId) {
+function selectSettingsSection(sectionId) {
     activeSettingsSection.value = sectionId;
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 watch(() => form.tipo, (value) => {
