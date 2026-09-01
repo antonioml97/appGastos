@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 /**
@@ -61,6 +62,7 @@ class GastoMensualController extends Controller
      */
     public function updateGasto(Request $request, Gasto $gasto): JsonResponse
     {
+        $this->ensureOwned($gasto);
         $validated = $this->validateGasto($request);
 
         return response()->json([
@@ -74,6 +76,7 @@ class GastoMensualController extends Controller
      */
     public function destroyGasto(Gasto $gasto): JsonResponse
     {
+        $this->ensureOwned($gasto);
         return response()->json([
             'message' => 'Gasto eliminado correctamente.',
             'id' => $this->expenses->delete($gasto),
@@ -98,6 +101,7 @@ class GastoMensualController extends Controller
      */
     public function updateIngreso(Request $request, Ingreso $ingreso): JsonResponse
     {
+        $this->ensureOwned($ingreso);
         $validated = $this->validateIngreso($request);
 
         return response()->json([
@@ -111,6 +115,7 @@ class GastoMensualController extends Controller
      */
     public function destroyIngreso(Ingreso $ingreso): JsonResponse
     {
+        $this->ensureOwned($ingreso);
         return response()->json([
             'message' => 'Ingreso eliminado correctamente.',
             'id' => $this->incomes->delete($ingreso),
@@ -177,7 +182,10 @@ class GastoMensualController extends Controller
                 'titulo' => ['required', 'string', 'max:255'],
                 'importe' => ['required', 'numeric', 'min:0.01'],
                 'fecha' => ['required', 'date'],
-                'categoria_id' => ['required', 'exists:categorias,id'],
+                'categoria_id' => [
+                    'required',
+                    Rule::exists('categorias', 'id')->where('user_id', $request->user()->id),
+                ],
                 'observaciones' => ['nullable', 'string'],
             ],
             [

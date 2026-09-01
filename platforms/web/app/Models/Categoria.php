@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -12,9 +13,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Categoria extends Model
 {
+    use BelongsToUser;
+
     protected $table = 'categorias';
 
     protected $fillable = [
+        'user_id',
         'nombre',
         'color',
         'icono',

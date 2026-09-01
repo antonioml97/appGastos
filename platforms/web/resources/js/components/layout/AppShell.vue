@@ -1,50 +1,67 @@
 <template>
-    <main class="min-h-screen overflow-hidden bg-[var(--color-ink)] text-[var(--color-paper)]">
-        <div class="pointer-events-none absolute inset-0 overflow-hidden">
-            <div class="absolute left-[-8rem] top-[-6rem] h-64 w-64 rounded-full bg-[var(--color-accent)]/20 blur-3xl"></div>
-            <div class="absolute right-[-5rem] top-20 h-56 w-56 rounded-full bg-[var(--color-gold)]/20 blur-3xl"></div>
-            <div class="absolute bottom-[-8rem] left-1/3 h-72 w-72 rounded-full bg-[var(--color-mint)]/15 blur-3xl"></div>
+    <main v-if="authStatus === 'loading'" class="flex min-h-screen items-center justify-center bg-[var(--color-ink)] text-[var(--color-paper)]">
+        <div class="rounded-3xl border border-white/10 bg-white/6 px-8 py-6 text-center shadow-2xl">
+            <p class="font-[var(--font-display)] text-xl font-bold">AppGastos</p>
+            <p class="mt-2 text-sm text-white/60">Sincronizando tu sesión…</p>
         </div>
+    </main>
 
-        <div class="relative mx-auto flex min-h-screen w-full max-w-[1600px] flex-col px-4 py-4 sm:px-6 lg:px-8 xl:px-10">
-            <header class="sticky top-4 z-10 mb-8 rounded-[2rem] border border-white/10 bg-[rgba(8,16,27,0.74)] px-5 py-4 backdrop-blur-xl">
-                <div class="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                    <div class="flex min-w-0 items-center gap-4">
+    <AuthPage
+        v-else-if="authStatus === 'guest'"
+        :error-message="authError"
+        :submitting="authSubmitting"
+        @authenticate="authenticate"
+        @clear-error="authError = ''"
+    />
+
+    <main v-else class="min-h-screen overflow-hidden bg-[var(--color-ink)] text-[var(--color-paper)]">
+        <div class="relative mx-auto flex min-h-screen w-full max-w-[1536px] flex-col px-4 sm:px-6 lg:px-8">
+            <header class="sticky top-0 z-20 border-b border-white/[0.07] bg-[rgba(3,13,25,0.9)] py-3 backdrop-blur-xl">
+                <div class="flex min-w-0 flex-wrap items-center gap-5 lg:flex-nowrap lg:gap-8">
+                    <a href="/" class="flex min-w-0 shrink-0 items-center gap-3">
                         <img
                             :src="logoUrl"
                             alt="Logo de AppGastos"
-                            class="h-14 w-14 rounded-2xl border border-white/10 bg-[#081225] p-2.5 shadow-lg shadow-black/20"
+                            class="h-10 w-10 rounded-xl border border-cyan-300/10 bg-[#061425] p-1.5"
                         >
-                        <div class="min-w-0">
-                            <p class="text-sm uppercase tracking-[0.25em] text-[var(--color-gold)]/85">AppGastos</p>
-                            <h1
-                                v-if="showPageTitle"
-                                class="mt-1 break-words font-[var(--font-display)] text-2xl font-bold sm:text-3xl"
-                            >
-                                {{ pageTitle }}
-                            </h1>
-                        </div>
-                    </div>
+                        <p class="hidden text-base font-bold uppercase tracking-[0.22em] text-white sm:block">
+                            App<span class="text-[var(--color-gold)]">Gastos</span>
+                        </p>
+                    </a>
 
-                    <nav class="flex min-w-0 flex-wrap gap-3">
+                    <nav class="scrollbar-none order-3 -mx-4 flex min-w-0 flex-1 gap-1 overflow-x-auto px-4 sm:mx-0 sm:px-0 lg:order-none">
                         <a
                             v-for="item in menuItems"
                             :key="item.href"
                             :href="item.href"
                             :class="[
-                                'max-w-full rounded-full px-4 py-2 text-sm font-semibold transition',
+                                'relative flex shrink-0 items-center gap-2 px-3 py-3 text-xs font-medium transition lg:px-4',
                                 currentPath === item.href
-                                    ? 'bg-[var(--color-gold)] text-[var(--color-ink)] shadow-lg'
-                                    : 'border border-white/10 bg-white/6 text-white/80 hover:bg-white/10',
+                                    ? 'text-white after:absolute after:inset-x-2 after:-bottom-3 after:h-0.5 after:bg-[var(--color-gold)]'
+                                    : 'text-white/55 hover:text-white/90',
                             ]"
                         >
+                            <span class="text-base leading-none" aria-hidden="true">{{ item.icon }}</span>
                             {{ item.label }}
                         </a>
                     </nav>
+
+                    <div class="ml-auto flex shrink-0 items-center gap-3">
+                        <a href="/gastos-mensuales" class="hidden items-center gap-2 rounded-lg bg-[var(--color-gold)] px-4 py-2.5 text-xs font-bold text-[#07111f] shadow-[0_8px_24px_rgba(247,196,94,0.18)] transition hover:brightness-110 md:flex">
+                            <span class="text-lg leading-none">+</span> Añadir movimiento
+                        </a>
+                        <button type="button" class="grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-xs font-semibold text-white/80 transition hover:border-white/20 hover:bg-white/[0.08]" :title="`Cerrar sesión${currentUser?.name ? ` de ${currentUser.name}` : ''}`" @click="logout">
+                            {{ userInitials }}
+                        </button>
+                    </div>
                 </div>
             </header>
 
-            <HomePage v-if="page === 'home'" :menu-items="menuItems" :state="home" />
+            <div v-if="showPageTitle" class="pb-6 pt-8">
+                <h1 class="font-[var(--font-display)] text-3xl font-bold">{{ pageTitle }}</h1>
+            </div>
+
+            <HomePage v-if="page === 'home'" :menu-items="menuItems" :state="home" :user="currentUser" />
 
             <CategoriesPage
                 v-else-if="page === 'categories'"
@@ -91,6 +108,7 @@
                 @create-fixed-entry="createFixedEntry"
                 @update-fixed-entry="updateFixedEntry"
                 @delete-fixed-entry="deleteFixedEntry"
+                @user-deleted="handleUserDeleted"
             />
 
             <YearlyPage
@@ -113,7 +131,8 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, reactive, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import AuthPage from '../pages/auth/AuthPage.vue';
 import CategoriesPage from '../pages/categories/CategoriesPage.vue';
 import HomePage from '../pages/home/HomePage.vue';
 import MonthlyPage from '../pages/monthly/MonthlyPage.vue';
@@ -121,6 +140,11 @@ import SettingsPage from '../pages/settings/SettingsPage.vue';
 import YearlyPage from '../pages/yearly/YearlyPage.vue';
 
 const initialData = window.__APP_DATA ?? { page: 'home', title: '' };
+
+const authStatus = ref('loading');
+const authSubmitting = ref(false);
+const authError = ref('');
+const currentUser = ref(null);
 
 const page = ref(initialData.page ?? 'home');
 const currentPath = ref(window.location.pathname);
@@ -131,12 +155,19 @@ let noticeTimeout = null;
 const showPageTitle = computed(() => page.value !== 'home' && Boolean(pageTitle.value));
 
 const menuItems = [
-    { label: 'Inicio', href: '/' },
-    { label: 'Categorías', href: '/categorias' },
-    { label: 'Gastos mensuales', href: '/gastos-mensuales' },
-    { label: 'Gastos anuales', href: '/gastos-anuales' },
-    { label: 'Configuracion', href: '/configuracion' },
+    { label: 'Inicio', href: '/', icon: '⌂' },
+    { label: 'Movimientos', href: '/gastos-mensuales', icon: '☷' },
+    { label: 'Categorías', href: '/categorias', icon: '⌘' },
+    { label: 'Informes', href: '/gastos-anuales', icon: '▥' },
+    { label: 'Configuración', href: '/configuracion', icon: '⚙' },
 ];
+
+const userInitials = computed(() => {
+    const name = currentUser.value?.name?.trim();
+    if (!name) return 'AG';
+
+    return name.split(/\s+/).slice(0, 2).map((part) => part[0]).join('').toUpperCase();
+});
 
 const settings = reactive({
     exportUrl: initialData.settings?.exportUrl ?? '/configuracion/exportar-gastos',
@@ -193,7 +224,7 @@ const noticeClass = computed(() => notice.type === 'error'
 
 async function createCategory(payload) {
     try {
-        const { data } = await window.axios.post('/categorias', payload);
+        const { data } = await window.api.post('/categorias', payload);
         categories.value.push(data.categoria);
         categories.value.sort((a, b) => a.nombre.localeCompare(b.nombre));
         monthly.categorias = categories.value.map(mapCategoryForMonthly);
@@ -207,7 +238,7 @@ async function createCategory(payload) {
 
 async function updateCategory(payload) {
     try {
-        const { data } = await window.axios.put(`/categorias/${payload.id}`, payload);
+        const { data } = await window.api.put(`/categorias/${payload.id}`, payload);
         const index = categories.value.findIndex((item) => item.id === payload.id);
         if (index !== -1) categories.value[index] = data.categoria;
         categories.value.sort((a, b) => a.nombre.localeCompare(b.nombre));
@@ -223,7 +254,7 @@ async function updateCategory(payload) {
 async function deleteCategory(payload) {
     if (!window.confirm(`Seguro que quieres borrar la categoria "${payload.nombre}"?`)) return;
     try {
-        const { data } = await window.axios.delete(`/categorias/${payload.id}`);
+        const { data } = await window.api.delete(`/categorias/${payload.id}`);
         categories.value = categories.value.filter((item) => item.id !== payload.id);
         monthly.categorias = categories.value.map(mapCategoryForMonthly);
         settings.categories = categories.value.map(mapCategoryForMonthly);
@@ -249,7 +280,7 @@ async function changeYear() {
 
 async function createExpense(payload) {
     try {
-        await window.axios.post('/gastos-mensuales/gastos', { ...payload, categoria_id: Number(payload.categoria_id) });
+        await window.api.post('/gastos-mensuales/gastos', { ...payload, categoria_id: Number(payload.categoria_id) });
         monthly.expenseErrors = [];
         monthly.expenseForm = { titulo: '', importe: '', fecha: monthStart(monthly.selectedMonthValue), categoria_id: '', observaciones: '' };
         showNotice('success', 'Gasto añadido correctamente.');
@@ -275,9 +306,10 @@ function cancelEditExpense() {
     monthly.editExpenseId = null;
 }
 
-async function updateExpense(id) {
+async function updateExpense(payload) {
     try {
-        await window.axios.put(`/gastos-mensuales/gastos/${id}`, { ...monthly.editExpenseForm, categoria_id: Number(monthly.editExpenseForm.categoria_id) });
+        const { id, ...expense } = payload;
+        await window.api.put(`/gastos-mensuales/gastos/${id}`, expense);
         monthly.editExpenseId = null;
         showNotice('success', 'Gasto actualizado correctamente.');
         await reloadCurrentPage();
@@ -289,7 +321,7 @@ async function updateExpense(id) {
 async function deleteExpense(gasto) {
     if (!window.confirm(`Seguro que quieres borrar el gasto "${gasto.titulo}"?`)) return;
     try {
-        await window.axios.delete(`/gastos-mensuales/gastos/${gasto.id}`);
+        await window.api.delete(`/gastos-mensuales/gastos/${gasto.id}`);
         showNotice('success', 'Gasto eliminado correctamente.');
         await reloadCurrentPage();
     } catch (error) {
@@ -299,7 +331,7 @@ async function deleteExpense(gasto) {
 
 async function createIncome(payload) {
     try {
-        await window.axios.post('/gastos-mensuales/ingresos', payload);
+        await window.api.post('/gastos-mensuales/ingresos', payload);
         monthly.incomeErrors = [];
         monthly.incomeForm = { titulo: '', importe: '', fecha: monthStart(monthly.selectedMonthValue), observaciones: '' };
         showNotice('success', 'Ingreso añadido correctamente.');
@@ -326,7 +358,7 @@ function cancelEditIncome() {
 
 async function updateIncome(id) {
     try {
-        await window.axios.put(`/gastos-mensuales/ingresos/${id}`, { ...monthly.editIncomeForm });
+        await window.api.put(`/gastos-mensuales/ingresos/${id}`, { ...monthly.editIncomeForm });
         monthly.editIncomeId = null;
         showNotice('success', 'Ingreso actualizado correctamente.');
         await reloadCurrentPage();
@@ -338,7 +370,7 @@ async function updateIncome(id) {
 async function deleteIncome(ingreso) {
     if (!window.confirm(`Seguro que quieres borrar el ingreso "${ingreso.titulo}"?`)) return;
     try {
-        await window.axios.delete(`/gastos-mensuales/ingresos/${ingreso.id}`);
+        await window.api.delete(`/gastos-mensuales/ingresos/${ingreso.id}`);
         showNotice('success', 'Ingreso eliminado correctamente.');
         await reloadCurrentPage();
     } catch (error) {
@@ -347,13 +379,15 @@ async function deleteIncome(ingreso) {
 }
 
 async function reloadCurrentPage(url = `${window.location.pathname}${window.location.search}`) {
-    const { data } = await window.axios.get(url);
+    const parsedUrl = new URL(url, window.location.origin);
+    const endpoint = parsedUrl.pathname === '/' ? '/dashboard' : `${parsedUrl.pathname}${parsedUrl.search}`;
+    const { data } = await window.api.get(endpoint);
     hydrate(data);
 }
 
 async function createFixedEntry(payload) {
     try {
-        const { data } = await window.axios.post('/configuracion/movimientos-fijos', payload);
+        const { data } = await window.api.post('/configuracion/movimientos-fijos', payload);
         settings.fixedEntries.unshift(data.fixedEntry);
         sortFixedEntries();
         showNotice('success', data.message);
@@ -364,7 +398,7 @@ async function createFixedEntry(payload) {
 
 async function createAccount(payload) {
     try {
-        const { data } = await window.axios.post('/configuracion/cuentas', payload);
+        const { data } = await window.api.post('/configuracion/cuentas', payload);
         settings.accounts.unshift(data.account);
         sortAccounts();
         showNotice('success', data.message);
@@ -375,7 +409,7 @@ async function createAccount(payload) {
 
 async function updateAccount(payload) {
     try {
-        const { data } = await window.axios.put(`/configuracion/cuentas/${payload.id}`, payload);
+        const { data } = await window.api.put(`/configuracion/cuentas/${payload.id}`, payload);
         const index = settings.accounts.findIndex((item) => item.id === payload.id);
 
         if (index !== -1) {
@@ -393,7 +427,7 @@ async function deleteAccount(account) {
     if (!window.confirm(`Seguro que quieres borrar la cuenta "${account.nombre}"?`)) return;
 
     try {
-        const { data } = await window.axios.delete(`/configuracion/cuentas/${account.id}`);
+        const { data } = await window.api.delete(`/configuracion/cuentas/${account.id}`);
         settings.accounts = settings.accounts.filter((item) => item.id !== account.id);
         showNotice('success', data.message);
     } catch (error) {
@@ -403,7 +437,7 @@ async function deleteAccount(account) {
 
 async function withdrawAccount(payload) {
     try {
-        const { data } = await window.axios.post(`/configuracion/cuentas/${payload.id}/retirar`, { importe: payload.importe });
+        const { data } = await window.api.post(`/configuracion/cuentas/${payload.id}/retirar`, { importe: payload.importe });
         const index = settings.accounts.findIndex((item) => item.id === payload.id);
 
         if (index !== -1) {
@@ -419,7 +453,7 @@ async function withdrawAccount(payload) {
 
 async function updateFixedEntry(payload) {
     try {
-        const { data } = await window.axios.put(`/configuracion/movimientos-fijos/${payload.id}`, payload);
+        const { data } = await window.api.put(`/configuracion/movimientos-fijos/${payload.id}`, payload);
         const index = settings.fixedEntries.findIndex((item) => item.id === payload.id);
 
         if (index !== -1) {
@@ -437,7 +471,7 @@ async function deleteFixedEntry(entry) {
     if (!window.confirm(`Seguro que quieres borrar el movimiento fijo "${entry.titulo}"?`)) return;
 
     try {
-        const { data } = await window.axios.delete(`/configuracion/movimientos-fijos/${entry.id}`);
+        const { data } = await window.api.delete(`/configuracion/movimientos-fijos/${entry.id}`);
         settings.fixedEntries = settings.fixedEntries.filter((item) => item.id !== entry.id);
         showNotice('success', data.message);
     } catch (error) {
@@ -452,7 +486,7 @@ async function exportWorkbook() {
 
     try {
         if (canUseAndroidBridgeFileSave()) {
-            const response = await window.axios.get(settings.exportUrl, {
+            const response = await window.api.get(settings.exportUrl, {
                 responseType: 'blob',
                 headers: {
                     Accept: 'application/vnd.ms-excel',
@@ -474,12 +508,12 @@ async function exportWorkbook() {
         }
 
         if (settings.nativeShareExportEnabled && settings.exportShareUrl) {
-            const { data } = await window.axios.post(settings.exportShareUrl);
+            const { data } = await window.api.post(settings.exportShareUrl);
             showNotice('success', data.message ?? 'Se ha abierto el panel para exportar el Excel.');
             return;
         }
 
-        const response = await window.axios.get(settings.exportUrl, {
+        const response = await window.api.get(settings.exportUrl, {
             responseType: 'blob',
             headers: {
                 Accept: 'application/vnd.ms-excel',
@@ -622,7 +656,7 @@ async function importWorkbook(file) {
         const formData = new FormData();
         formData.append('archivo', file);
 
-        const { data } = await window.axios.post('/configuracion/importar-excel', formData, {
+        const { data } = await window.api.post('/configuracion/importar-excel', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -658,7 +692,7 @@ async function clearAllData() {
     settings.isClearingData = true;
 
     try {
-        const { data } = await window.axios.delete(settings.clearDataUrl);
+        const { data } = await window.api.delete(settings.clearDataUrl);
         showNotice('success', data.message ?? 'Todos los datos se han borrado correctamente.');
         currentPath.value = '/configuracion';
         history.replaceState({}, '', '/configuracion');
@@ -717,6 +751,81 @@ function hydrate(payload) {
         settings.accounts = payload.settings?.accounts ?? [];
         settings.categories = payload.settings?.categories ?? [];
         settings.baseCategories = payload.settings?.baseCategories ?? [];
+    }
+}
+
+async function initializeAuth() {
+    const token = window.localStorage.getItem('appgastos_token');
+
+    if (!token) {
+        authStatus.value = 'guest';
+        return;
+    }
+
+    try {
+        const { data } = await window.api.get('/auth/user');
+        currentUser.value = data.user;
+        authStatus.value = 'authenticated';
+        await reloadCurrentPage();
+    } catch (error) {
+        clearSession();
+        authError.value = extractErrors(error)[0] ?? 'No se pudo recuperar la sesión.';
+    }
+}
+
+async function authenticate({ mode, payload }) {
+    authSubmitting.value = true;
+    authError.value = '';
+
+    try {
+        const { data } = await window.api.post(`/auth/${mode}`, {
+            ...payload,
+            device_name: nativeDeviceName(),
+        });
+
+        window.localStorage.setItem('appgastos_token', data.token);
+        currentUser.value = data.user;
+        authStatus.value = 'authenticated';
+        await reloadCurrentPage();
+    } catch (error) {
+        authError.value = extractErrors(error)[0] ?? 'No se pudo iniciar sesión.';
+    } finally {
+        authSubmitting.value = false;
+    }
+}
+
+async function logout() {
+    try {
+        await window.api.delete('/auth/logout');
+    } catch {
+        // El token local se elimina igualmente si el servidor no está disponible.
+    } finally {
+        clearSession();
+    }
+}
+
+function handleUserDeleted(message) {
+    clearSession();
+    authError.value = message ?? 'Tu cuenta se ha eliminado definitivamente.';
+}
+
+function clearSession() {
+    window.localStorage.removeItem('appgastos_token');
+    currentUser.value = null;
+    authStatus.value = 'guest';
+}
+
+function nativeDeviceName() {
+    const agent = window.navigator.userAgent ?? '';
+    if (/Android/i.test(agent)) return 'AppGastos Android';
+    if (/Windows/i.test(agent)) return 'AppGastos Windows';
+    return 'AppGastos Web';
+}
+
+function handleUnauthorized() {
+    if (authStatus.value !== 'guest') {
+        clearSession();
+        authError.value = 'Tu sesión ha caducado. Vuelve a iniciar sesión.';
     }
 }
 
@@ -782,7 +891,13 @@ function todayValue() {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 }
 
+onMounted(() => {
+    window.addEventListener('appgastos:unauthorized', handleUnauthorized);
+    initializeAuth();
+});
+
 onBeforeUnmount(() => {
+    window.removeEventListener('appgastos:unauthorized', handleUnauthorized);
     if (noticeTimeout) {
         clearTimeout(noticeTimeout);
     }

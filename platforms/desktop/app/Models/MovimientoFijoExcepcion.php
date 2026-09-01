@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -12,10 +13,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class MovimientoFijoExcepcion extends Model
 {
+    use BelongsToUser;
+
     protected $table = 'movimientos_fijos_excepciones';
     protected $dateFormat = 'Y-m-d';
 
     protected $fillable = [
+        'user_id',
         'movimiento_fijo_id',
         'tipo',
         'fecha',

@@ -62,6 +62,7 @@ class ConfiguracionController extends Controller
      */
     public function updateMovimientoFijo(Request $request, MovimientoFijo $movimientoFijo): JsonResponse
     {
+        $this->ensureOwned($movimientoFijo);
         $movimientoFijo->update($this->validateMovimientoFijo($request));
         $movimientoFijo->load('categoria');
 
@@ -76,6 +77,7 @@ class ConfiguracionController extends Controller
      */
     public function destroyMovimientoFijo(MovimientoFijo $movimientoFijo): JsonResponse
     {
+        $this->ensureOwned($movimientoFijo);
         $id = $movimientoFijo->id;
         $movimientoFijo->delete();
 
@@ -150,6 +152,7 @@ class ConfiguracionController extends Controller
      */
     public function updateCuenta(Request $request, Cuenta $cuenta): JsonResponse
     {
+        $this->ensureOwned($cuenta);
         $previousType = $cuenta->tipo;
         $validated = $this->validateCuenta($request);
         $cuenta->update($this->buildCuentaPayload($validated, $cuenta));
@@ -166,6 +169,7 @@ class ConfiguracionController extends Controller
      */
     public function destroyCuenta(Cuenta $cuenta): JsonResponse
     {
+        $this->ensureOwned($cuenta);
         $id = $cuenta->id;
         $type = $cuenta->tipo;
         $cuenta->delete();
@@ -182,6 +186,7 @@ class ConfiguracionController extends Controller
      */
     public function retirarCuenta(Request $request, Cuenta $cuenta): JsonResponse
     {
+        $this->ensureOwned($cuenta);
         if ($cuenta->tipo !== 'ahorro') {
             return response()->json([
                 'message' => 'Solo puedes retirar dinero de una cuenta de ahorro.',
@@ -253,10 +258,10 @@ class ConfiguracionController extends Controller
             'page' => 'settings',
             'title' => 'Configuracion',
             'settings' => [
-                'exportUrl' => route('configuracion.export.gastos'),
-                'exportShareUrl' => route('configuracion.export.gastos.share'),
+                'exportUrl' => '/configuracion/exportar-gastos',
+                'exportShareUrl' => '/configuracion/exportar-gastos/compartir',
                 'nativeShareExportEnabled' => $this->supportsNativeWorkbookShare(),
-                'clearDataUrl' => route('configuracion.datos.destroy'),
+                'clearDataUrl' => '/configuracion/datos',
                 'fixedEntries' => MovimientoFijo::query()
                     ->with('categoria')
                     ->orderBy('tipo')
@@ -311,7 +316,11 @@ class ConfiguracionController extends Controller
                 'titulo' => ['required', 'string', 'max:255'],
                 'importe' => ['required', 'numeric', 'min:0.01'],
                 'dia' => ['required', 'integer', 'min:1', 'max:31'],
-                'categoria_id' => ['nullable', 'exists:categorias,id', Rule::requiredIf($request->input('tipo') === 'gasto')],
+                'categoria_id' => [
+                    'nullable',
+                    Rule::exists('categorias', 'id')->where('user_id', $request->user()->id),
+                    Rule::requiredIf($request->input('tipo') === 'gasto'),
+                ],
                 'observaciones' => ['nullable', 'string'],
                 'activo' => ['nullable', 'boolean'],
             ],

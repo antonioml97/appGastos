@@ -6,13 +6,22 @@ use App\Models\Categoria;
 use App\Models\Gasto;
 use App\Models\Ingreso;
 use App\Models\MovimientoFijo;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Laravel\Sanctum\Sanctum;
 
 class ExportGastosExcelTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Sanctum::actingAs(User::factory()->create());
+    }
 
     public function test_it_exports_expenses_incomes_and_categories_in_a_single_excel_file(): void
     {

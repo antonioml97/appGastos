@@ -69,6 +69,7 @@ class CategoriaController extends Controller
      */
     public function update(Request $request, Categoria $categoria): JsonResponse
     {
+        $this->ensureOwned($categoria);
         $validated = $this->validateCategoria($request, $categoria);
 
         $categoria = $this->categories->update($categoria, $validated);
@@ -92,6 +93,7 @@ class CategoriaController extends Controller
      */
     public function destroy(Categoria $categoria): JsonResponse
     {
+        $this->ensureOwned($categoria);
         if (BaseCategoryConfig::isBaseCategory($categoria)) {
             return response()->json([
                 'message' => 'No se puede borrar una categoria base incluida en el JSON.',
@@ -119,11 +121,9 @@ class CategoriaController extends Controller
      */
     private function validateCategoria(Request $request, ?Categoria $categoria = null): array
     {
-        $uniqueRule = 'unique:categorias,nombre';
-
-        if ($categoria !== null) {
-            $uniqueRule .= ','.$categoria->id;
-        }
+        $uniqueRule = Rule::unique('categorias', 'nombre')
+            ->where('user_id', $request->user()->id)
+            ->ignore($categoria?->id);
 
         return $request->validate(
             [

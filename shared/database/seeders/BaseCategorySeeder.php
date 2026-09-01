@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Categoria;
+use App\Models\User;
 use App\Support\BaseCategoryConfig;
 use Illuminate\Database\Seeder;
 
@@ -18,14 +18,6 @@ class BaseCategorySeeder extends Seeder
      */
     public function run(): void
     {
-        foreach (BaseCategoryConfig::all() as $category) {
-            Categoria::query()->updateOrCreate(
-                ['nombre' => $category['nombre']],
-                [
-                    'color' => $category['color'],
-                    'icono' => $category['icono'],
-                ]
-            );
-        }
+        User::query()->each(fn (User $user) => BaseCategoryConfig::syncToDatabase($user->id));
     }
 }

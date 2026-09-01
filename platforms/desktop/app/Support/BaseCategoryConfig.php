@@ -96,11 +96,13 @@ class BaseCategoryConfig
     /**
      * Garantiza que las categorias base existan tambien en la base de datos.
      */
-    public static function syncToDatabase(): void
+    public static function syncToDatabase(?int $userId = null): void
     {
+        $userId ??= request()?->user()?->getAuthIdentifier() ?? auth()->id();
+
         foreach (self::all() as $category) {
             Categoria::query()->updateOrCreate(
-                ['nombre' => $category['nombre']],
+                ['user_id' => $userId, 'nombre' => $category['nombre']],
                 [
                     'color' => $category['color'],
                     'icono' => $category['icono'],

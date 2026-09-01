@@ -11,6 +11,8 @@
             :step="step"
             :min="min"
             :required="required"
+            :name="name"
+            :autocomplete="autocomplete"
             class="w-full rounded-2xl border border-white/10 bg-black/10 px-4 py-3 text-white outline-none transition placeholder:text-white/35 focus:border-[var(--focus-color,var(--color-gold))] focus:bg-black/15"
             :style="{ '--focus-color': focusColor }"
         >
@@ -27,6 +29,8 @@ defineProps({
     min: { type: String, default: undefined },
     required: { type: Boolean, default: false },
     focusColor: { type: String, default: 'var(--color-gold)' },
+    name: { type: String, default: undefined },
+    autocomplete: { type: String, default: undefined },
 });
 
 defineEmits(['update:modelValue']);

@@ -245,20 +245,20 @@
                             </div>
                         </div>
 
-                        <form v-else class="space-y-4" @submit.prevent="$emit('update-expense', gasto.id)">
+                        <form v-else class="space-y-4" @submit.prevent="submitExpenseEdit($event, gasto.id)">
                             <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
-                                <FormField v-model="localState.editExpenseForm.titulo" label="Titulo" required />
-                                <FormField v-model="localState.editExpenseForm.importe" label="Importe" type="number" step="0.01" min="0.01" required />
-                                <FormField v-model="localState.editExpenseForm.fecha" label="Fecha" type="date" required />
+                                <FormField v-model="localState.editExpenseForm.titulo" name="titulo" label="Titulo" required />
+                                <FormField v-model="localState.editExpenseForm.importe" name="importe" label="Importe" type="number" step="0.01" min="0.01" required />
+                                <FormField v-model="localState.editExpenseForm.fecha" name="fecha" label="Fecha" type="date" required />
                                 <div>
                                     <label class="mb-2 block text-sm font-semibold text-white/75">Categoria<span class="ml-1 text-[var(--color-accent)]">*</span></label>
-                                    <select v-model="localState.editExpenseForm.categoria_id" class="w-full rounded-2xl border border-white/10 bg-black/10 px-4 py-3 text-white outline-none transition focus:border-[var(--color-gold)]">
+                                    <select v-model="localState.editExpenseForm.categoria_id" name="categoria_id" class="w-full rounded-2xl border border-white/10 bg-black/10 px-4 py-3 text-white outline-none transition focus:border-[var(--color-gold)]">
                                         <option v-for="categoria in localState.categorias" :key="categoria.id" :value="categoria.id">{{ categoria.nombre }}</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <FormTextarea v-model="localState.editExpenseForm.observaciones" label="Observaciones" />
+                            <FormTextarea v-model="localState.editExpenseForm.observaciones" name="observaciones" label="Observaciones" />
 
                             <div class="flex flex-wrap gap-3">
                                 <button type="submit" class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/12">Guardar cambios</button>
@@ -344,7 +344,7 @@ const props = defineProps({
     state: { type: Object, required: true },
 });
 
-defineEmits(['change-month', 'create-expense', 'start-edit-expense', 'cancel-edit-expense', 'update-expense', 'delete-expense', 'create-income', 'start-edit-income', 'cancel-edit-income', 'update-income', 'delete-income']);
+const emit = defineEmits(['change-month', 'create-expense', 'start-edit-expense', 'cancel-edit-expense', 'update-expense', 'delete-expense', 'create-income', 'start-edit-income', 'cancel-edit-income', 'update-income', 'delete-income']);
 
 const localState = computed(() => props.state);
 const expenseFormOpen = ref(false);
@@ -415,5 +415,18 @@ function toggleBreakdownFilter(categoryId) {
 
 function clearBreakdownFilter() {
     activeBreakdownId.value = null;
+}
+
+function submitExpenseEdit(event, id) {
+    const values = new FormData(event.currentTarget);
+
+    emit('update-expense', {
+        id,
+        titulo: String(values.get('titulo') ?? '').trim(),
+        importe: String(values.get('importe') ?? ''),
+        fecha: String(values.get('fecha') ?? ''),
+        categoria_id: Number(values.get('categoria_id')),
+        observaciones: String(values.get('observaciones') ?? ''),
+    });
 }
 </script>

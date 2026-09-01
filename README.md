@@ -15,7 +15,9 @@ La idea central del proyecto es sencilla: la aplicacion real vive en `shared`, y
 | Arquitectura | `shared + platforms` |
 | Frontend | Vue 3 + Vite + Tailwind CSS 4 |
 | Backend | Laravel 12 + PHP 8.3 |
-| Base de datos | SQLite por plataforma |
+| Base de datos | Neon PostgreSQL compartida en produccion; SQLite para desarrollo local |
+| Acceso | Cuenta personal + token Sanctum por dispositivo |
+| Hosting web | Vercel (`https://appgastos-lilac.vercel.app`) |
 | Mobile | NativePHP Mobile 3 |
 | Desktop | NativePHP Desktop 2.1 |
 
@@ -39,6 +41,9 @@ El proyecto ya incorpora estas funcionalidades:
 - importacion desde Excel generado por la propia app
 - categorias base sincronizadas desde `shared/config.json`
 - mensajes de validacion legibles para usuario final
+- registro e inicio de sesion
+- aislamiento completo de datos por usuario
+- API comun para web, Android y escritorio
 
 ## Arquitectura del repositorio
 
@@ -73,7 +78,7 @@ Si vas a tocar logica, comportamiento, validaciones, pantallas o estructura func
 
 Wrapper de la version web.
 
-Tiene su propio:
+En produccion se despliega como Laravel serverless en Vercel y utiliza Neon PostgreSQL. En local mantiene su propio:
 
 - `.env`
 - `vendor`
@@ -89,7 +94,7 @@ Incluye:
 
 - entorno Laravel propio
 - proyecto Android nativo en `nativephp/android`
-- SQLite propia
+- API remota configurable mediante `VITE_API_URL`
 - bundle Laravel empaquetado dentro del APK
 
 ### `platforms/desktop`
@@ -100,7 +105,7 @@ Incluye:
 
 - entorno Laravel propio
 - runtime desktop
-- SQLite propia
+- API remota configurable mediante `VITE_API_URL`
 - build para Windows `.exe`
 
 ## Regla de trabajo recomendada
@@ -171,15 +176,17 @@ La cuenta normal ya no depende solo de un saldo global: el proyecto guarda el co
 - exportacion de datos
 - importacion desde archivos exportados por la propia app
 
-## Base de datos
+## Base de datos y usuarios
 
-Cada wrapper usa su propia base SQLite.
+Produccion utiliza una unica base Neon PostgreSQL. Todas las tablas financieras incluyen `user_id` y las consultas se filtran por el usuario autenticado, de modo que web, Android y escritorio ven los mismos datos sin mezclar cuentas.
 
-Eso significa que las migraciones deben ejecutarse por separado en:
+SQLite sigue disponible para pruebas locales. Las aplicaciones nativas consumen la API de produccion configurando:
 
-- `platforms/web`
-- `platforms/android`
-- `platforms/desktop`
+```dotenv
+VITE_API_URL=https://appgastos-lilac.vercel.app
+```
+
+La autenticacion usa tokens de Laravel Sanctum. No deben guardarse claves de Neon ni `APP_KEY` en el repositorio o en las aplicaciones cliente.
 
 Entre las migraciones actuales ya existen tablas o relaciones para:
 
@@ -344,6 +351,22 @@ Estos scripts sirven para volver a enlazar recursos compartidos como:
 - configuracion comun
 - `config.json`
 
+## Despliegue web
+
+El wrapper web incluye `vercel.json`, el punto de entrada PHP serverless en `api/server.php` y variables de ejemplo seguras. Los secretos reales se administran en Vercel.
+
+Flujo de mantenimiento:
+
+```powershell
+cd C:\Users\genericoRS\Desktop\AppGastos\platforms\web
+php artisan test
+npm run build
+vercel deploy
+vercel deploy --prod
+```
+
+Antes de una migracion en produccion, carga `DATABASE_URL_UNPOOLED` de Neon en el entorno local y ejecuta `php artisan migrate --force`. Las exportaciones privadas nunca se incorporan al repositorio: se importan desde Configuracion con la sesion del propietario iniciada.
+
 ## Archivos importantes
 
 - [README.md](C:\Users\genericoRS\Desktop\AppGastos\README.md)
@@ -435,7 +458,7 @@ npm run dev
 Si quieres quedarte con una sola idea del proyecto, es esta:
 
 - se desarrolla en `shared`
-- cada plataforma corre con su propio entorno y su propia SQLite
+- las tres plataformas comparten los datos de Neon mediante una API autenticada
 - primero se prueba en web
 - luego se valida en mobile o desktop
 - en Android hay que regenerar bien el bundle antes de sacar APK si quieres ver cambios reales

@@ -274,6 +274,8 @@
         </section>
 
         <aside class="space-y-6">
+            <AccountSecurityPanel @user-deleted="emit('user-deleted', $event)" />
+
             <section class="overflow-hidden rounded-[2rem] border border-white/10 bg-white/6 p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
@@ -434,6 +436,7 @@
 
 <script setup>
 import { reactive, ref, watch } from 'vue';
+import AccountSecurityPanel from './AccountSecurityPanel.vue';
 import FormField from '../../ui/form/FormField.vue';
 import FormTextarea from '../../ui/form/FormTextarea.vue';
 
@@ -458,6 +461,7 @@ const emit = defineEmits([
     'create-fixed-entry',
     'update-fixed-entry',
     'delete-fixed-entry',
+    'user-deleted',
 ]);
 
 const editingAccountId = ref(null);

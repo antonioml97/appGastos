@@ -66,6 +66,7 @@ Ensure-Directory (Join-Path $wrapperRoot 'public')
 
 $sharedDirectories = @(
     'app',
+    'lang',
     'resources',
     'routes',
     'tests',

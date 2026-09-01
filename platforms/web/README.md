@@ -25,6 +25,20 @@ Este wrapper usa Laravel web tradicional y comparte el codigo principal con `sha
 - `database/database.sqlite`
 - `node_modules`
 
+## Produccion
+
+La web se ejecuta en Vercel mediante `api/server.php` y almacena los datos en Neon PostgreSQL. Las variables secretas se configuran en Vercel; no se deben copiar a este directorio ni versionar.
+
+URL publica: `https://appgastos-lilac.vercel.app`
+
+Comprobacion previa al despliegue:
+
+```powershell
+php artisan test
+npm run build
+vercel deploy
+```
+
 ## Regenerar enlaces
 
 ```powershell
