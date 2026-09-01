@@ -28,8 +28,8 @@
             <div class="grid gap-3 sm:grid-cols-2 lg:col-span-12 lg:grid-cols-3 xl:grid-cols-[minmax(19rem,2fr)_repeat(5,minmax(0,1fr))]">
             <article class="panel relative min-h-36 overflow-hidden p-5 sm:col-span-2 sm:p-6 lg:col-span-3 xl:col-span-1">
                 <div class="relative z-10">
-                    <p class="flex items-center gap-2 text-sm text-white/75">Balance actual <span class="text-xs text-white/40">ⓘ</span></p>
-                    <p class="mt-3 font-[var(--font-display)] text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+                    <p class="flex items-center gap-2 text-sm text-white/75">Balance del mes <span class="text-xs text-white/40">ⓘ</span></p>
+                    <p class="mt-3 font-[var(--font-display)] text-4xl font-semibold tracking-tight sm:text-5xl" :class="balancePositive ? 'text-white' : 'text-rose-400'">
                         {{ formatCurrency(localState.summary.balance) }}
                     </p>
                     <p class="mt-2 text-xs text-white/50">
