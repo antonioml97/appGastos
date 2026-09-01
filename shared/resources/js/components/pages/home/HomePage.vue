@@ -197,7 +197,7 @@ const balanceRatioWidth = computed(() => `${Math.min(balanceRatioValue.value, 10
 const summaryCards = computed(() => [
     { label: 'Ingresos', value: formatCurrency(incomes.value), icon: '↓', badgeClass: 'border-emerald-400/25 bg-emerald-400/10 text-emerald-400', accentClass: 'text-emerald-400', captionLead: '↑ total', caption: 'del mes', waveClass: 'bg-[linear-gradient(170deg,transparent_45%,rgba(16,185,129,.12)_46%)]' },
     { label: 'Gastos', value: formatCurrency(expenses.value), icon: '↗', badgeClass: 'border-rose-400/25 bg-rose-400/10 text-rose-400', accentClass: 'text-rose-400', captionLead: `${expenseRatio.value}`, caption: 'de ingresos', waveClass: 'bg-[linear-gradient(170deg,transparent_45%,rgba(244,63,94,.12)_46%)]' },
-    { label: 'Ahorro', value: formatCurrency(Math.max(balance.value, 0)), icon: '⬡', badgeClass: 'border-cyan-400/25 bg-cyan-400/10 text-cyan-400', accentClass: 'text-cyan-400', captionLead: balanceRatio.value, caption: 'del ingreso', waveClass: 'bg-[linear-gradient(170deg,transparent_45%,rgba(34,211,238,.12)_46%)]' },
+    { label: 'Cuenta normal', value: formatCurrency(localState.value.accountsSummary?.normal), icon: '▣', badgeClass: 'border-cyan-400/25 bg-cyan-400/10 text-cyan-400', accentClass: 'text-cyan-400', captionLead: 'Disponible', caption: 'en la cuenta', waveClass: 'bg-[linear-gradient(170deg,transparent_45%,rgba(34,211,238,.12)_46%)]' },
     { label: 'Inversiones', value: formatCurrency(investments.value), icon: '◈', badgeClass: 'border-violet-400/25 bg-violet-400/10 text-violet-400', accentClass: 'text-violet-400', captionLead: '↑ acumulado', caption: 'este mes', waveClass: 'bg-[linear-gradient(170deg,transparent_45%,rgba(139,92,246,.14)_46%)]' },
 ]);
 

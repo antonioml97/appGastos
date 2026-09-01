@@ -189,7 +189,7 @@ const quickMovementLoading = ref(false);
 const quickMovementSubmitting = ref(false);
 const logoUrl = `${window.location.origin}/images/logo.svg`;
 let noticeTimeout = null;
-const showPageTitle = computed(() => page.value !== 'home' && Boolean(pageTitle.value));
+const showPageTitle = computed(() => !['home', 'settings'].includes(page.value) && Boolean(pageTitle.value));
 
 const menuItems = [
     { label: 'Inicio', href: '/', icon: '⌂' },
@@ -268,7 +268,7 @@ async function createCategory(payload) {
         showNotice('success', data.message);
     } catch (error) {
         const errors = extractErrors(error);
-        showNotice('error', errors[0] ?? 'No se pudo crear la categoria.');
+        showNotice('error', errors[0] ?? 'No se pudo crear la categoría.');
     }
 }
 
@@ -282,13 +282,13 @@ async function updateCategory(payload) {
         settings.categories = categories.value.map(mapCategoryForMonthly);
         showNotice('success', data.message);
     } catch (error) {
-        showNotice('error', extractErrors(error)[0] ?? 'No se pudo actualizar la categoria.');
+        showNotice('error', extractErrors(error)[0] ?? 'No se pudo actualizar la categoría.');
         await reloadCurrentPage();
     }
 }
 
 async function deleteCategory(payload) {
-    if (!window.confirm(`Seguro que quieres borrar la categoria "${payload.nombre}"?`)) return;
+    if (!window.confirm(`¿Seguro que quieres borrar la categoría "${payload.nombre}"?`)) return;
     try {
         const { data } = await window.api.delete(`/categorias/${payload.id}`);
         categories.value = categories.value.filter((item) => item.id !== payload.id);
@@ -296,7 +296,7 @@ async function deleteCategory(payload) {
         settings.categories = categories.value.map(mapCategoryForMonthly);
         showNotice('success', data.message);
     } catch (error) {
-        showNotice('error', extractErrors(error)[0] ?? 'No se pudo borrar la categoria.');
+        showNotice('error', extractErrors(error)[0] ?? 'No se pudo borrar la categoría.');
     }
 }
 
@@ -756,7 +756,7 @@ async function clearAllData() {
     if (settings.isClearingData) return;
 
     const accepted = window.confirm(
-        'Se borraran gastos, ingresos, movimientos fijos, cuentas y categorias personalizadas. Esta accion no se puede deshacer. ¿Quieres continuar?',
+        'Se borrarán gastos, ingresos, movimientos fijos, cuentas y categorías personalizadas. Esta acción no se puede deshacer. ¿Quieres continuar?',
     );
 
     if (!accepted) {

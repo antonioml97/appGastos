@@ -56,7 +56,7 @@
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <p class="text-xs uppercase tracking-[0.38em] text-[var(--color-gold)]/85 sm:text-sm">Nuevo gasto</p>
-                        <h2 class="mt-4 font-[var(--font-display)] text-[clamp(2rem,5vw,3rem)] leading-none font-bold">Anadir gasto</h2>
+                        <h2 class="mt-4 font-[var(--font-display)] text-[clamp(2rem,5vw,3rem)] leading-none font-bold">Añadir gasto</h2>
                     </div>
 
                     <button
@@ -64,12 +64,12 @@
                         class="rounded-2xl bg-[var(--color-gold)] px-5 py-3 text-sm font-semibold text-[var(--color-ink)] transition hover:brightness-105"
                         @click="expenseFormOpen = !expenseFormOpen"
                     >
-                        {{ expenseFormOpen ? 'Cerrar formulario' : 'Anadir gasto' }}
+                        {{ expenseFormOpen ? 'Cerrar formulario' : 'Añadir gasto' }}
                     </button>
                 </div>
 
                 <div v-if="!localState.categorias.length" class="mt-6 rounded-2xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">
-                    Primero crea al menos una categoria para poder registrar gastos.
+                    Primero crea al menos una categoría para poder registrar gastos.
                 </div>
 
                 <template v-else-if="expenseFormOpen">
@@ -80,7 +80,7 @@
                     </div>
 
                     <form class="mt-8 space-y-5" @submit.prevent="$emit('create-expense', localState.expenseForm)">
-                        <FormField v-model="localState.expenseForm.titulo" label="Titulo" placeholder="Ej. Supermercado" required />
+                        <FormField v-model="localState.expenseForm.titulo" label="Título" placeholder="Ej. Supermercado" required />
 
                         <div class="grid gap-4 sm:grid-cols-2">
                             <FormField v-model="localState.expenseForm.importe" label="Importe" type="number" step="0.01" min="0.01" required />
@@ -88,9 +88,9 @@
                         </div>
 
                         <div>
-                            <label class="mb-2 block text-sm font-semibold text-white/80">Categoria<span class="ml-1 text-[var(--color-accent)]">*</span></label>
+                            <label class="mb-2 block text-sm font-semibold text-white/80">Categoría<span class="ml-1 text-[var(--color-accent)]">*</span></label>
                             <select v-model="localState.expenseForm.categoria_id" class="w-full rounded-2xl border border-white/10 bg-[var(--color-ink-soft)]/85 px-4 py-3 text-white outline-none transition focus:border-[var(--color-gold)]">
-                                <option value="">Selecciona una categoria</option>
+                                <option value="">Selecciona una categoría</option>
                                 <option v-for="categoria in localState.categorias" :key="categoria.id" :value="String(categoria.id)">{{ categoria.nombre }}</option>
                             </select>
                         </div>
@@ -108,7 +108,7 @@
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <p class="text-xs uppercase tracking-[0.38em] text-[var(--color-mint)]/85 sm:text-sm">Nuevo ingreso</p>
-                        <h2 class="mt-4 font-[var(--font-display)] text-[clamp(2rem,5vw,3rem)] leading-none font-bold">Anadir ingreso</h2>
+                        <h2 class="mt-4 font-[var(--font-display)] text-[clamp(2rem,5vw,3rem)] leading-none font-bold">Añadir ingreso</h2>
                     </div>
 
                     <button
@@ -116,7 +116,7 @@
                         class="rounded-2xl bg-[var(--color-mint)] px-5 py-3 text-sm font-semibold text-[var(--color-ink)] transition hover:brightness-105"
                         @click="incomeFormOpen = !incomeFormOpen"
                     >
-                        {{ incomeFormOpen ? 'Cerrar formulario' : 'Anadir ingreso' }}
+                        {{ incomeFormOpen ? 'Cerrar formulario' : 'Añadir ingreso' }}
                     </button>
                 </div>
 
@@ -128,7 +128,7 @@
                     </div>
 
                     <form class="mt-8 space-y-5" @submit.prevent="$emit('create-income', localState.incomeForm)">
-                        <FormField v-model="localState.incomeForm.titulo" label="Titulo" placeholder="Ej. Nomina" focus-color="var(--color-mint)" required />
+                        <FormField v-model="localState.incomeForm.titulo" label="Título" placeholder="Ej. Nómina" focus-color="var(--color-mint)" required />
 
                         <div class="grid gap-4 sm:grid-cols-2">
                             <FormField v-model="localState.incomeForm.importe" label="Importe" type="number" step="0.01" min="0.01" focus-color="var(--color-mint)" required />
@@ -152,13 +152,13 @@
                         <div class="relative h-52 w-52 rounded-full border border-white/10 shadow-2xl sm:h-56 sm:w-56" :style="{ background: chartBackground }">
                             <div class="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-[var(--color-ink)]/95"></div>
                         </div>
-                        <p class="mt-4 text-sm uppercase tracking-[0.2em] text-white/55">Grafica de tarta</p>
+                        <p class="mt-4 text-sm uppercase tracking-[0.2em] text-white/55">Gráfica de distribución</p>
                     </div>
 
                     <div>
                         <p class="text-xs uppercase tracking-[0.32em] text-[var(--color-mint)] sm:text-sm">Desglose</p>
                         <h2 class="mt-2 font-[var(--font-display)] text-[clamp(1.8rem,4vw,2.3rem)] leading-tight font-bold">
-                            Gasto por categoria
+                            Gastos por categoría
                         </h2>
 
                         <div v-if="activeBreakdownItem" class="mt-4 flex flex-wrap items-center gap-3">
@@ -200,7 +200,7 @@
                             </button>
 
                             <div v-if="localState.desglose.length === 0" class="rounded-2xl border border-dashed border-white/15 bg-white/5 px-5 py-8 text-center text-white/65">
-                                Todavia no hay datos para mostrar la grafica de este mes.
+                                Todavía no hay datos para mostrar la gráfica de este mes.
                             </div>
                         </div>
                     </div>
@@ -247,11 +247,11 @@
 
                         <form v-else class="space-y-4" @submit.prevent="submitExpenseEdit($event, gasto.id)">
                             <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
-                                <FormField v-model="localState.editExpenseForm.titulo" name="titulo" label="Titulo" required />
+                                <FormField v-model="localState.editExpenseForm.titulo" name="titulo" label="Título" required />
                                 <FormField v-model="localState.editExpenseForm.importe" name="importe" label="Importe" type="number" step="0.01" min="0.01" required />
                                 <FormField v-model="localState.editExpenseForm.fecha" name="fecha" label="Fecha" type="date" required />
                                 <div>
-                                    <label class="mb-2 block text-sm font-semibold text-white/75">Categoria<span class="ml-1 text-[var(--color-accent)]">*</span></label>
+                                    <label class="mb-2 block text-sm font-semibold text-white/75">Categoría<span class="ml-1 text-[var(--color-accent)]">*</span></label>
                                     <select v-model="localState.editExpenseForm.categoria_id" name="categoria_id" class="w-full rounded-2xl border border-white/10 bg-black/10 px-4 py-3 text-white outline-none transition focus:border-[var(--color-gold)]">
                                         <option v-for="categoria in localState.categorias" :key="categoria.id" :value="categoria.id">{{ categoria.nombre }}</option>
                                     </select>
@@ -268,7 +268,7 @@
                     </article>
 
                     <div v-if="filteredExpenses.length === 0" class="rounded-3xl border border-dashed border-white/15 bg-white/5 px-5 py-10 text-center text-white/65">
-                        {{ activeBreakdownItem ? `No hay movimientos en ${activeBreakdownItem.nombre} para este mes.` : 'Todavia no hay gastos registrados para este mes.' }}
+                        {{ activeBreakdownItem ? `No hay movimientos en ${activeBreakdownItem.nombre} para este mes.` : 'Todavía no hay gastos registrados para este mes.' }}
                     </div>
                 </div>
             </section>
@@ -310,7 +310,7 @@
 
                         <form v-else class="space-y-4" @submit.prevent="$emit('update-income', ingreso.id)">
                             <div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
-                                <FormField v-model="localState.editIncomeForm.titulo" label="Titulo" required />
+                                <FormField v-model="localState.editIncomeForm.titulo" label="Título" required />
                                 <FormField v-model="localState.editIncomeForm.importe" label="Importe" type="number" step="0.01" min="0.01" required />
                                 <FormField v-model="localState.editIncomeForm.fecha" label="Fecha" type="date" required />
                             </div>
@@ -325,7 +325,7 @@
                     </article>
 
                     <div v-if="localState.ingresos.length === 0" class="rounded-3xl border border-dashed border-white/15 bg-white/5 px-5 py-10 text-center text-white/65">
-                        Todavia no hay ingresos registrados para este mes.
+                        Todavía no hay ingresos registrados para este mes.
                     </div>
                 </div>
             </section>

@@ -218,6 +218,47 @@
     padding-top: calc(0.75rem + env(safe-area-inset-top));
 }
 
+.settings-sidebar {
+    min-width: 0;
+    padding: 0.45rem;
+    border: 1px solid rgba(148, 163, 184, 0.08);
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(7, 24, 40, 0.92), rgba(4, 17, 30, 0.84));
+}
+
+.settings-page .settings-content > header h1 {
+    letter-spacing: -0.035em;
+}
+
+.settings-page .settings-content h2 {
+    margin-top: 0.45rem !important;
+    font-size: clamp(1.15rem, 2vw, 1.4rem) !important;
+    line-height: 1.15 !important;
+    letter-spacing: -0.015em;
+}
+
+.settings-page .settings-content h3 {
+    font-size: 1.05rem !important;
+}
+
+.settings-page .settings-content section[class*="rounded-"] {
+    padding: 1rem !important;
+}
+
+.settings-page .settings-content p[class*="leading-8"] {
+    margin-top: 0.6rem !important;
+    font-size: 0.82rem !important;
+    line-height: 1.5 !important;
+}
+
+.settings-page .settings-content article {
+    padding: 0.85rem !important;
+}
+
+.settings-page .settings-content form {
+    margin-top: 1rem !important;
+}
+
 @media (min-width: 1024px) {
     .app-native-nav {
         display: none;
@@ -253,5 +294,14 @@
     .app-page button,
     .app-page a[class*="rounded-"] {
         min-height: 44px;
+    }
+
+    .settings-sidebar {
+        position: sticky;
+        top: calc(4.25rem + env(safe-area-inset-top));
+        z-index: 15;
+        margin-inline: -0.25rem;
+        background: rgba(4, 17, 30, 0.96);
+        backdrop-filter: blur(18px);
     }
 }

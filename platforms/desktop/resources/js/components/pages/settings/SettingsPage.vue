@@ -1,7 +1,31 @@
 <template>
-    <section class="app-page grid gap-3 xl:grid-cols-[1.08fr_0.92fr]">
-        <section class="space-y-3">
-            <section class="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(48,214,169,0.12),rgba(255,255,255,0.03))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
+    <section id="settings-overview" class="settings-page app-page grid min-w-0 gap-4 lg:grid-cols-[13rem_minmax(0,1fr)]">
+        <nav class="settings-sidebar lg:sticky lg:top-24 lg:self-start" aria-label="Secciones de configuración">
+            <p class="hidden text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--color-mint)] lg:block">Configuración</p>
+            <div class="scrollbar-none flex gap-2 overflow-x-auto pb-1 lg:mt-4 lg:flex-col lg:overflow-visible">
+                <button
+                    v-for="item in settingsNavItems"
+                    :key="item.id"
+                    type="button"
+                    :class="activeSettingsSection === item.id ? 'border-[var(--color-mint)]/35 bg-[var(--color-mint)]/10 text-white' : 'border-transparent text-white/55 hover:bg-white/5 hover:text-white'"
+                    class="flex min-h-11 shrink-0 items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm font-medium transition lg:w-full"
+                    @click="scrollToSettingsSection(item.id)"
+                >
+                    <span class="text-base text-[var(--color-mint)]" aria-hidden="true">{{ item.icon }}</span>
+                    {{ item.label }}
+                </button>
+            </div>
+        </nav>
+
+        <div class="settings-content min-w-0">
+            <header class="mb-5">
+                <h1 class="font-[var(--font-display)] text-3xl font-semibold text-white">Configuración</h1>
+                <p class="mt-1 text-sm text-white/50">Gestiona tus cuentas, automatizaciones, seguridad y datos.</p>
+            </header>
+
+            <div class="grid min-w-0 gap-3 xl:grid-cols-[1.12fr_0.88fr]">
+        <section class="min-w-0 space-y-3">
+            <section id="settings-accounts" class="scroll-mt-28 overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(48,214,169,0.12),rgba(255,255,255,0.03))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <p class="text-sm uppercase tracking-[0.32em] text-[var(--color-mint)]/85">Cuentas</p>
@@ -9,8 +33,8 @@
                             Cuenta normal o de ahorro
                         </h2>
                         <p class="mt-5 max-w-2xl text-base leading-8 text-white/72">
-                            Crea cuentas normales o cuentas de ahorro. El importe inicial se define aqui
-                            y puedes ajustarlo desde configuracion o retirar cantidad cuando lo necesites.
+                            Crea cuentas normales o cuentas de ahorro. El importe inicial se define aquí
+                            y puedes ajustarlo desde configuración o retirar una cantidad cuando lo necesites.
                         </p>
                     </div>
 
@@ -19,7 +43,7 @@
                         class="rounded-2xl border border-white/10 bg-white/8 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
                         @click="isAccountsSectionOpen = !isAccountsSectionOpen"
                     >
-                        {{ isAccountsSectionOpen ? 'Ocultar cuentas' : 'Mostrar cuentas' }}
+                        {{ isAccountsSectionOpen ? 'Cerrar gestión' : 'Gestionar cuentas →' }}
                     </button>
                 </div>
 
@@ -74,12 +98,12 @@
                             class="rounded-2xl border border-white/10 bg-white/8 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
                             @click="resetAccountForm"
                         >
-                            Cancelar edicion
+                            Cancelar edición
                         </button>
                     </div>
                 </form>
 
-                <div v-if="isAccountsSectionOpen" class="mt-8 space-y-4">
+                <div v-if="accounts.length" class="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
                     <article
                         v-for="account in accounts"
                         :key="account.id"
@@ -139,21 +163,18 @@
                         </div>
                     </article>
 
-                    <div v-if="accounts.length === 0" class="rounded-[1.5rem] border border-dashed border-white/12 bg-white/4 p-6 text-sm leading-7 text-white/65">
-                        Todavia no has creado ninguna cuenta.
-                    </div>
                 </div>
             </section>
 
-            <section class="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
+            <section id="settings-fixed" class="scroll-mt-28 overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                        <p class="text-sm uppercase tracking-[0.32em] text-[var(--color-gold)]/85">Configuracion</p>
+                        <p class="text-sm uppercase tracking-[0.32em] text-[var(--color-gold)]/85">Configuración</p>
                         <h2 class="mt-4 font-[var(--font-display)] text-[clamp(2rem,4.8vw,3.3rem)] leading-none font-bold">
                             Movimientos fijos mensuales
                         </h2>
                         <p class="mt-5 max-w-2xl text-base leading-8 text-white/72">
-                            Guarda gastos o ingresos que se repiten cada mes y la app los generara automaticamente
+                            Guarda gastos o ingresos que se repiten cada mes y la app los generará automáticamente
                             en la fecha indicada.
                         </p>
                     </div>
@@ -163,7 +184,7 @@
                         class="rounded-2xl border border-white/10 bg-white/8 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
                         @click="isFixedSectionOpen = !isFixedSectionOpen"
                     >
-                        {{ isFixedSectionOpen ? 'Ocultar movimientos fijos' : 'Mostrar movimientos fijos' }}
+                        {{ isFixedSectionOpen ? 'Cerrar gestión' : 'Gestionar movimientos →' }}
                     </button>
                 </div>
 
@@ -183,7 +204,7 @@
                             </select>
                         </div>
 
-                        <FormField v-model="form.titulo" label="Titulo" placeholder="Ej. Alquiler" required />
+                        <FormField v-model="form.titulo" label="Título" placeholder="Ej. Alquiler" required />
                     </div>
 
                     <div class="grid gap-4 sm:grid-cols-2">
@@ -192,9 +213,9 @@
                     </div>
 
                     <div v-if="form.tipo === 'gasto'">
-                        <label class="mb-2 block text-sm font-semibold text-white/80">Categoria<span class="ml-1 text-[var(--color-accent)]">*</span></label>
+                        <label class="mb-2 block text-sm font-semibold text-white/80">Categoría<span class="ml-1 text-[var(--color-accent)]">*</span></label>
                         <select v-model="form.categoria_id" class="w-full rounded-2xl border border-white/10 bg-[var(--color-ink-soft)]/85 px-4 py-3 text-white outline-none transition focus:border-[var(--color-gold)]">
-                            <option value="">Selecciona una categoria</option>
+                            <option value="">Selecciona una categoría</option>
                             <option v-for="categoria in categories" :key="categoria.id" :value="String(categoria.id)">{{ categoria.nombre }}</option>
                         </select>
                     </div>
@@ -216,7 +237,7 @@
                             class="rounded-2xl border border-white/10 bg-white/8 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
                             @click="resetForm"
                         >
-                            Cancelar edicion
+                            Cancelar edición
                         </button>
                     </div>
                 </form>
@@ -287,16 +308,18 @@
                     </article>
 
                     <div v-if="fixedEntries.length === 0" class="rounded-[1.5rem] border border-dashed border-white/12 bg-white/4 p-6 text-sm leading-7 text-white/65">
-                        Todavia no has creado gastos o ingresos fijos mensuales.
+                        Todavía no has creado gastos o ingresos fijos mensuales.
                     </div>
                 </div>
             </section>
         </section>
 
-        <aside class="space-y-3">
-            <AccountSecurityPanel @user-deleted="emit('user-deleted', $event)" />
+        <aside class="min-w-0 space-y-3">
+            <div id="settings-security" class="scroll-mt-28 space-y-3">
+                <AccountSecurityPanel @user-deleted="emit('user-deleted', $event)" />
+            </div>
 
-            <section class="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
+            <section id="settings-data" class="scroll-mt-28 overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <p class="text-sm uppercase tracking-[0.32em] text-[var(--color-gold)]/85">Excel</p>
@@ -305,7 +328,7 @@
                         </h2>
                         <p class="mt-5 max-w-2xl text-base leading-8 text-white/72">
                             Genera un archivo Excel ordenado por hojas con gastos, ingresos, movimientos
-                            fijos y categorias, o importa despues ese mismo fichero para recuperar tus datos.
+                            fijos y categorías, o impórtalo después para recuperar tus datos.
                         </p>
                     </div>
 
@@ -329,7 +352,7 @@
                     </button>
                     <p class="text-sm leading-7 text-white/55">
                         Descarga un unico fichero compatible con Excel con un resumen inicial y hojas separadas
-                        para gastos, ingresos, movimientos fijos y categorias.
+                        para gastos, ingresos, movimientos fijos y categorías.
                     </p>
                 </div>
 
@@ -338,7 +361,7 @@
                     <h3 class="mt-3 text-lg font-semibold text-white">Importa un Excel exportado por AppGastos</h3>
                     <p class="mt-2 text-sm leading-7 text-white/65">
                         Selecciona un fichero `.xls` o `.xml` generado por esta misma app. La importacion mezcla
-                        categorias, gastos, ingresos y movimientos fijos, y omite duplicados exactos.
+                        categorías, gastos, ingresos y movimientos fijos, y omite duplicados exactos.
                     </p>
 
                     <div v-if="importErrors.length" class="mt-5 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-50">
@@ -378,11 +401,11 @@
                             Borrar todos los datos
                         </h2>
                         <p class="mt-5 max-w-2xl text-base leading-8 text-white/72">
-                            Elimina gastos, ingresos, movimientos fijos, cuentas y categorias personalizadas.
-                            Las categorias base de AppGastos se mantendran disponibles para empezar de nuevo.
+                            Elimina gastos, ingresos, movimientos fijos, cuentas y categorías personalizadas.
+                            Las categorías predeterminadas de AppGastos seguirán disponibles para empezar de nuevo.
                         </p>
                         <p class="mt-4 text-sm leading-7 text-rose-100/80">
-                            Esta accion no se puede deshacer y pedira una confirmacion extra antes de ejecutarse.
+                            Esta acción no se puede deshacer y pedirá una confirmación adicional antes de ejecutarse.
                         </p>
                     </div>
 
@@ -405,11 +428,13 @@
                         {{ isClearingData ? 'Borrando datos...' : 'Borrar todos los datos' }}
                     </button>
                     <p class="text-sm leading-7 text-white/55">
-                        Usa esta opcion solo si quieres reiniciar completamente la informacion guardada.
+                        Usa esta opción solo si quieres reiniciar completamente la información guardada.
                     </p>
                 </div>
             </section>
         </aside>
+            </div>
+        </div>
     </section>
 </template>
 
@@ -446,11 +471,12 @@ const editingAccountId = ref(null);
 const accountErrors = ref([]);
 const editingId = ref(null);
 const errors = ref([]);
-const isAccountsSectionOpen = ref(true);
+const activeSettingsSection = ref('settings-overview');
+const isAccountsSectionOpen = ref(false);
 const isFixedSectionOpen = ref(false);
-const isFixedEntriesSectionOpen = ref(false);
-const isExportSectionOpen = ref(false);
-const isDangerSectionOpen = ref(false);
+const isFixedEntriesSectionOpen = ref(true);
+const isExportSectionOpen = ref(true);
+const isDangerSectionOpen = ref(true);
 const importErrors = ref([]);
 const selectedImportFile = ref(null);
 const selectedImportFileName = ref('');
@@ -459,6 +485,18 @@ const withdrawForms = reactive({});
 const accountForm = reactive(buildDefaultAccountForm());
 const form = reactive(buildDefaultForm());
 const savingsAccount = computed(() => props.accounts.find((account) => account.tipo === 'ahorro') ?? null);
+const settingsNavItems = [
+    { id: 'settings-overview', label: 'General', icon: '⌂' },
+    { id: 'settings-accounts', label: 'Cuentas', icon: '▣' },
+    { id: 'settings-fixed', label: 'Movimientos fijos', icon: '▤' },
+    { id: 'settings-security', label: 'Seguridad', icon: '▢' },
+    { id: 'settings-data', label: 'Datos', icon: '◉' },
+];
+
+function scrollToSettingsSection(sectionId) {
+    activeSettingsSection.value = sectionId;
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
 watch(() => form.tipo, (value) => {
     if (value !== 'gasto') {
@@ -494,12 +532,12 @@ function submit() {
     errors.value = [];
 
     if (!form.titulo.trim()) {
-        errors.value = ['El titulo es obligatorio.'];
+        errors.value = ['El título es obligatorio.'];
         return;
     }
 
     if (form.tipo === 'gasto' && !form.categoria_id) {
-        errors.value = ['Debes seleccionar una categoria para el gasto fijo.'];
+        errors.value = ['Debes seleccionar una categoría para el gasto fijo.'];
         return;
     }
 

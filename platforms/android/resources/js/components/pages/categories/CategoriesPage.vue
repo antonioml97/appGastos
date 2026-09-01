@@ -3,10 +3,10 @@
         <aside class="min-w-0 overflow-hidden rounded-[2rem] border border-white/10 bg-white/6 p-6 shadow-xl backdrop-blur-lg sm:p-8">
             <div class="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                    <p class="text-sm uppercase tracking-[0.3em] text-[var(--color-gold)]/85">Nueva categoria</p>
-                    <h2 class="mt-4 font-[var(--font-display)] text-4xl font-bold">Crear categoria</h2>
+                    <p class="text-sm uppercase tracking-[0.3em] text-[var(--color-gold)]/85">Nueva categoría</p>
+                    <h2 class="mt-4 font-[var(--font-display)] text-4xl font-bold">Crear categoría</h2>
                     <p class="mt-4 text-sm leading-7 text-white/72">
-                        Anade una categoria nueva para clasificar tus gastos. Puedes definir nombre, color e icono.
+                        Añade una categoría para organizar tus gastos. Puedes elegir su nombre, color e icono.
                     </p>
                 </div>
 
@@ -23,9 +23,9 @@
                 <div class="mt-6 rounded-3xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] p-4 shadow-lg shadow-black/10">
                     <p class="text-xs uppercase tracking-[0.2em] text-white/55">Vista previa</p>
                     <div class="mt-3 flex items-center gap-3">
-                        <CategoryIconBadge :icon="form.icono" :color="form.color" :alt="`Icono de ${form.nombre || 'la categoria'}`" />
+                        <CategoryIconBadge :icon="form.icono" :color="form.color" :alt="`Icono de ${form.nombre || 'la categoría'}`" />
                         <div>
-                            <p class="font-semibold text-white">{{ form.nombre || 'Nueva categoria' }}</p>
+                            <p class="font-semibold text-white">{{ form.nombre || 'Nueva categoría' }}</p>
                             <p class="text-sm text-white/55">{{ selectedIconLabel || 'Sin icono' }}</p>
                         </div>
                     </div>
@@ -76,12 +76,12 @@
                         </div>
 
                         <div v-else class="rounded-2xl border border-dashed border-white/15 bg-white/5 px-4 py-4 text-sm leading-7 text-white/60">
-                            No hay iconos disponibles todavia en <span class="font-medium text-white/78">public/images/icons</span>.
+                            No hay iconos disponibles todavía.
                         </div>
                     </div>
 
                     <button type="submit" class="w-full rounded-2xl bg-[var(--color-gold)] px-4 py-3 text-sm font-semibold text-[var(--color-ink)] transition hover:brightness-105">
-                        Guardar categoria
+                        Guardar categoría
                     </button>
                 </form>
             </div>
@@ -91,12 +91,12 @@
             <div class="flex min-w-0 flex-wrap items-start justify-between gap-4">
                 <div>
                     <p class="text-sm uppercase tracking-[0.2em] text-[var(--color-mint)]">Listado</p>
-                    <h2 class="mt-2 font-[var(--font-display)] text-3xl font-bold">Categorias disponibles</h2>
+                    <h2 class="mt-2 font-[var(--font-display)] text-3xl font-bold">Categorías disponibles</h2>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3">
                     <div class="rounded-2xl border border-white/10 bg-white/8 px-4 py-2 text-sm text-white/70">
-                        {{ localCategories.length }} categorias
+                        {{ localCategories.length }} categorías
                     </div>
                     <button
                         type="button"
@@ -128,8 +128,8 @@
                                     </span>
                                 </div>
                                 <p class="mt-1 text-sm text-white/60">
-                                    Icono: {{ iconLabel(categoria.icono) || 'Sin icono' }} / Gastos asociados: {{ categoria.gastos_count }}
-                                    <span v-if="categoria.is_base"> / Protegida desde JSON</span>
+                                    Icono: {{ iconLabel(categoria.icono) || 'Sin icono' }} · {{ categoria.gastos_count }} gastos asociados
+                                    <span v-if="categoria.is_base"> · Categoría predeterminada</span>
                                 </p>
                             </div>
                         </div>
@@ -189,7 +189,7 @@
                             </div>
 
                             <div v-else class="rounded-2xl border border-dashed border-white/15 bg-white/5 px-4 py-4 text-sm text-white/60">
-                                Sin iconos cargados en public/images/icons.
+                                No hay iconos disponibles.
                             </div>
                         </div>
 
@@ -209,7 +209,7 @@
                 </article>
 
                 <div v-if="localCategories.length === 0" class="rounded-3xl border border-dashed border-white/15 bg-white/5 px-5 py-8 text-center text-white/65">
-                    Todavia no hay categorias creadas.
+                    Todavía no hay categorías creadas.
                 </div>
             </div>
         </section>

@@ -143,7 +143,7 @@
                             <CategoryIconBadge
                                 :icon="topCategory?.icono ?? ''"
                                 :color="topCategory?.color ?? '#f7c45e'"
-                                :alt="topCategory ? `Icono de ${topCategory.nombre}` : 'Sin categoria destacada'"
+                                :alt="topCategory ? `Icono de ${topCategory.nombre}` : 'Sin categoría destacada'"
                             />
                             <p class="text-xl font-bold text-white">{{ topCategory?.nombre ?? 'Sin datos' }}</p>
                         </div>

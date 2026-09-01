@@ -256,7 +256,7 @@ class ConfiguracionController extends Controller
 
         return [
             'page' => 'settings',
-            'title' => 'Configuracion',
+            'title' => 'Configuración',
             'settings' => [
                 'exportUrl' => '/configuracion/exportar-gastos',
                 'exportShareUrl' => '/configuracion/exportar-gastos/compartir',

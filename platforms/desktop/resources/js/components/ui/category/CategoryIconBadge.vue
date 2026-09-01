@@ -23,7 +23,7 @@ import { computed } from 'vue';
 const props = defineProps({
     icon: { type: String, default: '' },
     color: { type: String, default: '#f7c45e' },
-    alt: { type: String, default: 'Icono de categoria' },
+    alt: { type: String, default: 'Icono de categoría' },
 });
 
 const iconSrc = computed(() => {

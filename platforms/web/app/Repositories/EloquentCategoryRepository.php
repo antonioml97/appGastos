@@ -23,7 +23,7 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
     {
         return [
             'page' => 'categories',
-            'title' => 'Categorias',
+            'title' => 'Categorías',
             'categoryIcons' => CategoryIconCatalog::all(),
             'categories' => Categoria::query()
                 ->withCount('gastos')
