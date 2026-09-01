@@ -1,5 +1,5 @@
 <template>
-    <section class="grid min-w-0 gap-6 overflow-hidden lg:grid-cols-[0.95fr_1.05fr]">
+    <section class="app-page grid min-w-0 gap-3 overflow-hidden lg:grid-cols-[0.78fr_1.22fr]">
         <aside class="min-w-0 overflow-hidden rounded-[2rem] border border-white/10 bg-white/6 p-6 shadow-xl backdrop-blur-lg sm:p-8">
             <div class="flex flex-wrap items-start justify-between gap-4">
                 <div>
@@ -145,7 +145,7 @@
                             <button
                                 v-if="categoria.can_delete !== false"
                                 type="button"
-                                class="rounded-xl bg-[var(--color-accent)] px-3 py-2 text-xs font-semibold text-white transition hover:brightness-110"
+                                class="rounded-xl bg-[var(--color-danger)] px-3 py-2 text-xs font-semibold text-white transition hover:brightness-90"
                                 @click="$emit('delete', categoria)"
                             >
                                 Borrar
@@ -232,7 +232,7 @@ const localCategories = ref(cloneCategories(props.categories));
 const formErrors = ref([]);
 const editingCategoryId = ref(null);
 const isCreateSectionOpen = ref(false);
-const isListSectionOpen = ref(false);
+const isListSectionOpen = ref(true);
 const form = reactive({
     nombre: '',
     color: '#ff7a59',

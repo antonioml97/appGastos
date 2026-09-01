@@ -1,6 +1,6 @@
 <template>
-    <section class="grid items-start gap-6 2xl:grid-cols-[1.35fr_0.95fr]">
-        <section class="space-y-6">
+    <section class="app-page grid items-start gap-3 xl:grid-cols-[1.35fr_0.95fr]">
+        <section class="space-y-3">
             <section class="rounded-[2rem] border border-white/10 bg-white/6 p-6 shadow-xl backdrop-blur-lg sm:p-8">
                 <div class="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
                     <div class="min-w-0">
@@ -47,9 +47,9 @@
                         </p>
                     </article>
                     <article class="rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,122,89,0.12),rgba(255,255,255,0.03))] p-5">
-                        <p class="text-sm uppercase tracking-[0.28em] text-[var(--color-accent)]">Balance</p>
+                        <p class="text-sm uppercase tracking-[0.28em] text-[var(--color-danger)]">Balance</p>
                         <p
-                            :class="state.summary.balance >= 0 ? 'text-[var(--color-mint)]' : 'text-[var(--color-accent)]'"
+                            :class="state.summary.balance >= 0 ? 'text-[var(--color-mint)]' : 'text-[var(--color-danger)]'"
                             class="mt-4 text-[clamp(1.9rem,3.4vw,2.8rem)] leading-[0.95] font-bold tracking-tight [overflow-wrap:anywhere]"
                         >
                             {{ formatCurrency(state.summary.balance) }}
@@ -72,7 +72,7 @@
                     </div>
                     <div class="flex flex-wrap gap-4 text-sm text-white/70">
                         <span class="flex items-center gap-2"><span class="h-3 w-3 rounded-full bg-[var(--color-mint)]"></span>Ingresos</span>
-                        <span class="flex items-center gap-2"><span class="h-3 w-3 rounded-full bg-[var(--color-accent)]"></span>Gastos</span>
+                        <span class="flex items-center gap-2"><span class="h-3 w-3 rounded-full bg-[var(--color-danger)]"></span>Gastos</span>
                     </div>
                 </div>
 
@@ -85,7 +85,7 @@
                         <div class="grid gap-4 lg:grid-cols-[72px_1fr] lg:items-center">
                             <div>
                                 <p class="text-sm uppercase tracking-[0.24em] text-white/45">{{ item.label }}</p>
-                                <p :class="item.balance >= 0 ? 'text-[var(--color-mint)]' : 'text-[var(--color-accent)]'" class="mt-2 text-sm font-semibold">
+                                <p :class="item.balance >= 0 ? 'text-[var(--color-mint)]' : 'text-[var(--color-danger)]'" class="mt-2 text-sm font-semibold">
                                     {{ formatSignedCurrency(item.balance) }}
                                 </p>
                             </div>
@@ -106,12 +106,12 @@
 
                                 <div>
                                     <div class="mb-2 flex items-center justify-between gap-3 text-sm">
-                                        <span class="text-[var(--color-accent)]">Gastos</span>
+                                        <span class="text-[var(--color-danger)]">Gastos</span>
                                         <span class="font-semibold text-white">{{ formatCurrency(item.expense) }}</span>
                                     </div>
                                     <div class="h-3 overflow-hidden rounded-full bg-white/8">
                                         <div
-                                            class="h-full rounded-full bg-[var(--color-accent)] shadow-[0_0_18px_rgba(255,122,89,0.25)]"
+                                            class="h-full rounded-full bg-[var(--color-danger)] shadow-[0_0_18px_rgba(251,79,100,0.25)]"
                                             :style="{ width: `${item.expenseWidth}%` }"
                                         ></div>
                                     </div>
@@ -124,7 +124,7 @@
             </section>
         </section>
 
-        <aside class="space-y-6 self-start">
+        <aside class="space-y-3 self-start">
             <section class="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.09),rgba(255,255,255,0.03))] p-6 backdrop-blur-lg sm:p-8">
                 <div class="flex items-start justify-between gap-4">
                     <div>

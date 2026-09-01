@@ -15,8 +15,8 @@
     />
 
     <main v-else class="min-h-screen overflow-hidden bg-[var(--color-ink)] text-[var(--color-paper)]">
-        <div class="relative mx-auto flex min-h-screen w-full max-w-[1536px] flex-col px-4 sm:px-6 lg:px-8">
-            <header class="sticky top-0 z-20 border-b border-white/[0.07] bg-[rgba(3,13,25,0.9)] py-3 backdrop-blur-xl">
+        <div class="relative mx-auto flex min-h-screen w-full max-w-[1536px] flex-col px-4 pb-24 sm:px-6 lg:px-8 lg:pb-0">
+            <header class="app-topbar sticky top-0 z-20 border-b border-white/[0.07] bg-[rgba(3,13,25,0.9)] py-3 backdrop-blur-xl">
                 <div class="flex min-w-0 flex-wrap items-center gap-5 lg:flex-nowrap lg:gap-8">
                     <a href="/" class="flex min-w-0 shrink-0 items-center gap-3">
                         <img
@@ -24,12 +24,12 @@
                             alt="Logo de AppGastos"
                             class="h-10 w-10 rounded-xl border border-cyan-300/10 bg-[#061425] p-1.5"
                         >
-                        <p class="hidden text-base font-bold uppercase tracking-[0.22em] text-white sm:block">
+                        <p class="text-sm font-bold uppercase tracking-[0.18em] text-white sm:text-base sm:tracking-[0.22em]">
                             App<span class="text-[var(--color-gold)]">Gastos</span>
                         </p>
                     </a>
 
-                    <nav class="scrollbar-none order-3 -mx-4 flex min-w-0 flex-1 gap-1 overflow-x-auto px-4 sm:mx-0 sm:px-0 lg:order-none">
+                    <nav class="scrollbar-none hidden min-w-0 flex-1 gap-1 overflow-x-auto lg:flex">
                         <a
                             v-for="item in menuItems"
                             :key="item.href"
@@ -47,9 +47,9 @@
                     </nav>
 
                     <div class="ml-auto flex shrink-0 items-center gap-3">
-                        <a href="/gastos-mensuales" class="hidden items-center gap-2 rounded-lg bg-[var(--color-gold)] px-4 py-2.5 text-xs font-bold text-[#07111f] shadow-[0_8px_24px_rgba(247,196,94,0.18)] transition hover:brightness-110 md:flex">
+                        <button type="button" class="hidden items-center gap-2 rounded-lg bg-[var(--color-gold)] px-4 py-2.5 text-xs font-bold text-[#07111f] shadow-[0_8px_24px_rgba(247,196,94,0.18)] transition hover:brightness-110 md:flex" @click="openQuickMovement">
                             <span class="text-lg leading-none">+</span> Añadir movimiento
-                        </a>
+                        </button>
                         <button type="button" class="grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-xs font-semibold text-white/80 transition hover:border-white/20 hover:bg-white/[0.08]" :title="`Cerrar sesión${currentUser?.name ? ` de ${currentUser.name}` : ''}`" @click="logout">
                             {{ userInitials }}
                         </button>
@@ -57,8 +57,9 @@
                 </div>
             </header>
 
-            <div v-if="showPageTitle" class="pb-6 pt-8">
-                <h1 class="font-[var(--font-display)] text-3xl font-bold">{{ pageTitle }}</h1>
+            <div v-if="showPageTitle" class="pb-4 pt-6 sm:pb-5 sm:pt-7">
+                <p class="mb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--color-mint)]/75">AppGastos</p>
+                <h1 class="font-[var(--font-display)] text-2xl font-semibold sm:text-3xl">{{ pageTitle }}</h1>
             </div>
 
             <HomePage v-if="page === 'home'" :menu-items="menuItems" :state="home" :user="currentUser" />
@@ -118,6 +119,39 @@
             />
         </div>
 
+        <nav class="app-native-nav lg:hidden" aria-label="Navegación principal">
+            <a
+                v-for="item in menuItems"
+                :key="`mobile-${item.href}`"
+                :href="item.href"
+                :class="currentPath === item.href ? 'is-active' : ''"
+                :aria-current="currentPath === item.href ? 'page' : undefined"
+            >
+                <span aria-hidden="true">{{ item.icon }}</span>
+                <small>{{ item.mobileLabel ?? item.label }}</small>
+            </a>
+        </nav>
+
+        <button
+            type="button"
+            class="fixed right-5 z-40 grid h-14 w-14 place-items-center rounded-full bg-[var(--color-gold)] text-3xl font-light text-[var(--color-ink)] shadow-[0_12px_32px_rgba(251,191,36,0.3)] transition active:scale-95 md:hidden"
+            style="bottom: calc(5.4rem + env(safe-area-inset-bottom));"
+            aria-label="Añadir movimiento"
+            @click="openQuickMovement"
+        >
+            +
+        </button>
+
+        <QuickMovementModal
+            :open="quickMovementOpen"
+            :loading="quickMovementLoading"
+            :submitting="quickMovementSubmitting"
+            :state="monthly"
+            @close="quickMovementOpen = false"
+            @submit-expense="submitQuickExpense"
+            @submit-income="submitQuickIncome"
+        />
+
         <transition name="toast">
             <div
                 v-if="notice.message"
@@ -138,6 +172,7 @@ import HomePage from '../pages/home/HomePage.vue';
 import MonthlyPage from '../pages/monthly/MonthlyPage.vue';
 import SettingsPage from '../pages/settings/SettingsPage.vue';
 import YearlyPage from '../pages/yearly/YearlyPage.vue';
+import QuickMovementModal from '../ui/movement/QuickMovementModal.vue';
 
 const initialData = window.__APP_DATA ?? { page: 'home', title: '' };
 
@@ -150,16 +185,19 @@ const page = ref(initialData.page ?? 'home');
 const currentPath = ref(window.location.pathname);
 const pageTitle = ref(initialData.title ?? '');
 const notice = reactive({ type: '', message: '' });
+const quickMovementOpen = ref(false);
+const quickMovementLoading = ref(false);
+const quickMovementSubmitting = ref(false);
 const logoUrl = `${window.location.origin}/images/logo.svg`;
 let noticeTimeout = null;
 const showPageTitle = computed(() => page.value !== 'home' && Boolean(pageTitle.value));
 
 const menuItems = [
     { label: 'Inicio', href: '/', icon: '⌂' },
-    { label: 'Movimientos', href: '/gastos-mensuales', icon: '☷' },
+    { label: 'Movimientos', mobileLabel: 'Movimientos', href: '/gastos-mensuales', icon: '☷' },
     { label: 'Categorías', href: '/categorias', icon: '⌘' },
     { label: 'Informes', href: '/gastos-anuales', icon: '▥' },
-    { label: 'Configuración', href: '/configuracion', icon: '⚙' },
+    { label: 'Configuración', mobileLabel: 'Ajustes', href: '/configuracion', icon: '⚙' },
 ];
 
 const userInitials = computed(() => {
@@ -278,6 +316,47 @@ async function changeYear() {
     await reloadCurrentPage(url);
 }
 
+async function openQuickMovement() {
+    quickMovementOpen.value = true;
+    quickMovementLoading.value = true;
+    monthly.expenseErrors = [];
+    monthly.incomeErrors = [];
+
+    const selectedMonth = page.value === 'monthly'
+        ? monthly.selectedMonthValue
+        : (page.value === 'home' ? home.selectedMonthValue : currentMonthValue());
+
+    try {
+        const { data } = await window.api.get(`/gastos-mensuales?mes=${selectedMonth}`);
+        monthly.selectedMonthLabel = data.selectedMonthLabel;
+        monthly.selectedMonthValue = data.selectedMonthValue;
+        monthly.categorias = data.categorias ?? [];
+        monthly.expenseForm.fecha = monthStart(data.selectedMonthValue);
+        monthly.incomeForm.fecha = monthStart(data.selectedMonthValue);
+    } catch (error) {
+        quickMovementOpen.value = false;
+        showNotice('error', extractErrors(error)[0] ?? 'No se pudo preparar el formulario de movimiento.');
+    } finally {
+        quickMovementLoading.value = false;
+    }
+}
+
+async function submitQuickExpense(payload) {
+    if (quickMovementSubmitting.value) return;
+    quickMovementSubmitting.value = true;
+    const saved = await createExpense(payload);
+    quickMovementSubmitting.value = false;
+    if (saved) quickMovementOpen.value = false;
+}
+
+async function submitQuickIncome(payload) {
+    if (quickMovementSubmitting.value) return;
+    quickMovementSubmitting.value = true;
+    const saved = await createIncome(payload);
+    quickMovementSubmitting.value = false;
+    if (saved) quickMovementOpen.value = false;
+}
+
 async function createExpense(payload) {
     try {
         await window.api.post('/gastos-mensuales/gastos', { ...payload, categoria_id: Number(payload.categoria_id) });
@@ -285,9 +364,11 @@ async function createExpense(payload) {
         monthly.expenseForm = { titulo: '', importe: '', fecha: monthStart(monthly.selectedMonthValue), categoria_id: '', observaciones: '' };
         showNotice('success', 'Gasto añadido correctamente.');
         await reloadCurrentPage();
+        return true;
     } catch (error) {
         monthly.expenseErrors = extractErrors(error);
         showNotice('error', monthly.expenseErrors[0] ?? 'No se pudo guardar el gasto.');
+        return false;
     }
 }
 
@@ -336,9 +417,11 @@ async function createIncome(payload) {
         monthly.incomeForm = { titulo: '', importe: '', fecha: monthStart(monthly.selectedMonthValue), observaciones: '' };
         showNotice('success', 'Ingreso añadido correctamente.');
         await reloadCurrentPage();
+        return true;
     } catch (error) {
         monthly.incomeErrors = extractErrors(error);
         showNotice('error', monthly.incomeErrors[0] ?? 'No se pudo guardar el ingreso.');
+        return false;
     }
 }
 

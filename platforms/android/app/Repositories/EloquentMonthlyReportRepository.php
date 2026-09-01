@@ -14,6 +14,7 @@ use App\Support\BaseCategoryConfig;
 use App\Support\ExcelWorkbookImporter;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class EloquentMonthlyReportRepository implements MonthlyReportRepositoryInterface
 {
@@ -71,6 +72,10 @@ class EloquentMonthlyReportRepository implements MonthlyReportRepositoryInterfac
 
         $totalGastado = (float) $gastos->sum('importe');
         $totalIngresado = (float) $ingresos->sum('importe');
+        $totalInvertido = (float) $desglose
+            ->filter(fn (array $item) => Str::lower(Str::ascii((string) $item['nombre'])) === 'inversiones'
+                || Str::lower(Str::ascii((string) $item['icono'])) === 'inversiones')
+            ->sum('total');
         $totalMovimientos = $gastos->count();
         $importeMedio = $totalMovimientos > 0 ? $totalGastado / $totalMovimientos : 0;
         $balance = $totalIngresado - $totalGastado;
@@ -88,6 +93,7 @@ class EloquentMonthlyReportRepository implements MonthlyReportRepositoryInterfac
             'summary' => [
                 'totalGastado' => round($totalGastado, 2),
                 'totalIngresado' => round($totalIngresado, 2),
+                'totalInvertido' => round($totalInvertido, 2),
                 'totalMovimientos' => $totalMovimientos,
                 'importeMedio' => round($importeMedio, 2),
                 'balance' => round($balance, 2),

@@ -1,6 +1,6 @@
 <template>
-    <section class="grid gap-6 2xl:grid-cols-[0.98fr_1.02fr]">
-        <aside class="space-y-6">
+    <section class="app-page grid gap-3 xl:grid-cols-[0.84fr_1.16fr]">
+        <aside class="space-y-3">
             <section class="grid gap-4 sm:grid-cols-2">
                 <article class="rounded-[1.8rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] p-5 shadow-xl shadow-black/10 backdrop-blur-lg">
                     <p class="text-xs uppercase tracking-[0.32em] text-white/55">Cuenta normal</p>
@@ -145,7 +145,7 @@
             </section>
         </aside>
 
-        <section class="space-y-6">
+        <section class="space-y-3">
             <section class="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.09),rgba(255,255,255,0.03))] p-5 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-7">
                 <div class="grid gap-6 lg:grid-cols-[0.72fr_1.28fr] lg:items-center">
                     <div class="flex flex-col items-center justify-center">
@@ -240,7 +240,7 @@
                                 <p class="text-2xl font-bold text-white">{{ formatCurrency(gasto.importe) }}</p>
                                 <div class="flex flex-wrap gap-3">
                                     <button type="button" class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/12" @click="$emit('start-edit-expense', gasto)">Editar</button>
-                                    <button type="button" class="rounded-2xl bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110" @click="$emit('delete-expense', gasto)">Borrar</button>
+                                    <button type="button" class="rounded-2xl bg-[var(--color-danger)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-90" @click="$emit('delete-expense', gasto)">Borrar</button>
                                 </div>
                             </div>
                         </div>
@@ -262,7 +262,7 @@
 
                             <div class="flex flex-wrap gap-3">
                                 <button type="submit" class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/12">Guardar cambios</button>
-                                <button type="button" class="rounded-2xl bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110" @click="$emit('cancel-edit-expense')">Cancelar</button>
+                                <button type="button" class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/12" @click="$emit('cancel-edit-expense')">Cancelar</button>
                             </div>
                         </form>
                     </article>
@@ -303,7 +303,7 @@
                                 <p class="text-2xl font-bold text-emerald-300">{{ formatCurrency(ingreso.importe) }}</p>
                                 <div class="flex flex-wrap gap-3">
                                     <button type="button" class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/12" @click="$emit('start-edit-income', ingreso)">Editar</button>
-                                    <button type="button" class="rounded-2xl bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110" @click="$emit('delete-income', ingreso)">Borrar</button>
+                                    <button type="button" class="rounded-2xl bg-[var(--color-danger)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-90" @click="$emit('delete-income', ingreso)">Borrar</button>
                                 </div>
                             </div>
                         </div>
@@ -319,7 +319,7 @@
 
                             <div class="flex flex-wrap gap-3">
                                 <button type="submit" class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/12">Guardar cambios</button>
-                                <button type="button" class="rounded-2xl bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110" @click="$emit('cancel-edit-income')">Cancelar</button>
+                                <button type="button" class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/12" @click="$emit('cancel-edit-income')">Cancelar</button>
                             </div>
                         </form>
                     </article>

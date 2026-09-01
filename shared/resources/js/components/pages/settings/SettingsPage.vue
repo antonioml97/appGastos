@@ -1,6 +1,6 @@
 <template>
-    <section class="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
-        <section class="space-y-6">
+    <section class="app-page grid gap-3 xl:grid-cols-[1.08fr_0.92fr]">
+        <section class="space-y-3">
             <section class="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(48,214,169,0.12),rgba(255,255,255,0.03))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
@@ -99,7 +99,7 @@
                                         >
                                         <button
                                             type="button"
-                                            class="rounded-2xl bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110"
+                                            class="rounded-2xl bg-[var(--color-danger)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110"
                                             @click="withdrawFromAccount(account)"
                                         >
                                             Quitar cantidad
@@ -111,7 +111,7 @@
                                     <button type="button" class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/12" @click="startEditAccount(account)">
                                         Editar
                                     </button>
-                                    <button type="button" class="rounded-2xl bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110" @click="$emit('delete-account', account)">
+                                    <button type="button" class="rounded-2xl bg-[var(--color-danger)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-90" @click="$emit('delete-account', account)">
                                         Borrar
                                     </button>
                                 </div>
@@ -234,7 +234,7 @@
                             <div class="min-w-0">
                                 <div class="flex flex-wrap items-center gap-3">
                                     <span
-                                        :class="entry.tipo === 'gasto' ? 'bg-[var(--color-accent)]/14 text-[var(--color-accent)]' : 'bg-[var(--color-mint)]/14 text-[var(--color-mint)]'"
+                                        :class="entry.tipo === 'gasto' ? 'bg-[var(--color-danger)]/14 text-[var(--color-danger)]' : 'bg-[var(--color-mint)]/14 text-[var(--color-mint)]'"
                                         class="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]"
                                     >
                                         {{ entry.tipo }}
@@ -259,7 +259,7 @@
                                 <button type="button" class="rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/12" @click="startEdit(entry)">
                                     Editar
                                 </button>
-                                <button type="button" class="rounded-2xl bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110" @click="$emit('delete-fixed-entry', entry)">
+                                <button type="button" class="rounded-2xl bg-[var(--color-danger)] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-90" @click="$emit('delete-fixed-entry', entry)">
                                     Borrar
                                 </button>
                             </div>
@@ -273,7 +273,7 @@
             </section>
         </section>
 
-        <aside class="space-y-6">
+        <aside class="space-y-3">
             <AccountSecurityPanel @user-deleted="emit('user-deleted', $event)" />
 
             <section class="overflow-hidden rounded-[2rem] border border-white/10 bg-white/6 p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
@@ -420,7 +420,7 @@
                     <button
                         type="button"
                         :disabled="isClearingData"
-                        class="inline-flex items-center justify-center rounded-2xl bg-rose-500 px-6 py-4 text-sm font-semibold text-white transition hover:brightness-105 disabled:cursor-wait disabled:opacity-70"
+                        class="inline-flex items-center justify-center rounded-2xl bg-[var(--color-danger)] px-6 py-4 text-sm font-semibold text-white transition hover:brightness-90 disabled:cursor-wait disabled:opacity-70"
                         @click="emit('clear-data')"
                     >
                         {{ isClearingData ? 'Borrando datos...' : 'Borrar todos los datos' }}

@@ -16,10 +16,10 @@ class EloquentMonthlyReportRepositoryTest extends TestCase
 
     public function test_it_builds_a_monthly_payload_with_filtered_movements_and_totals(): void
     {
-        $comida = Categoria::query()->create([
-            'nombre' => 'Comida',
+        $inversiones = Categoria::query()->create([
+            'nombre' => 'Inversiones',
             'color' => '#84CC16',
-            'icono' => 'comida',
+            'icono' => 'inversiones',
         ]);
 
         $hogar = Categoria::query()->create([
@@ -32,7 +32,7 @@ class EloquentMonthlyReportRepositoryTest extends TestCase
             'titulo' => 'Compra semanal',
             'importe' => 52.40,
             'fecha' => '2026-04-10',
-            'categoria_id' => $comida->id,
+            'categoria_id' => $inversiones->id,
             'observaciones' => 'Mercado',
         ]);
 
@@ -72,6 +72,7 @@ class EloquentMonthlyReportRepositoryTest extends TestCase
         $this->assertSame('2026-04', $payload['selectedMonthValue']);
         $this->assertSame(852.4, $payload['summary']['totalGastado']);
         $this->assertSame(1800.0, $payload['summary']['totalIngresado']);
+        $this->assertSame(52.4, $payload['summary']['totalInvertido']);
         $this->assertSame(2, $payload['summary']['totalMovimientos']);
         $this->assertSame(426.2, $payload['summary']['importeMedio']);
         $this->assertSame(947.6, $payload['summary']['balance']);

@@ -14,6 +14,7 @@
     --color-ink-soft: #0a1c2d;
     --color-paper: #f3f6fa;
     --color-accent: #22d3c5;
+    --color-danger: #ef4444;
     --color-gold: #fbbf24;
     --color-mint: #10d9a3;
 }
@@ -89,5 +90,168 @@
     .toast-leave-to {
         opacity: 0;
         transform: translate(-50%, calc(-50% + 12px)) scale(0.98);
+    }
+}
+
+/* Superficie visual compartida por dashboard, formularios y wrappers nativos. */
+.app-page {
+    padding-bottom: 1.5rem;
+}
+
+.app-page section[class*="rounded-"],
+.app-page aside[class*="rounded-"] {
+    border-radius: 14px !important;
+    border-color: rgba(148, 163, 184, 0.09) !important;
+    padding: 1.25rem !important;
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.015), 0 12px 30px rgba(0, 0, 0, 0.09) !important;
+}
+
+.app-page section[class*="rounded-"]:not([class*="border-rose"]),
+.app-page aside[class*="rounded-"]:not([class*="border-rose"]) {
+    background: linear-gradient(145deg, rgba(10, 28, 45, 0.96), rgba(6, 20, 35, 0.96)) !important;
+}
+
+.app-page article {
+    border-radius: 12px !important;
+    border-color: rgba(148, 163, 184, 0.09) !important;
+    background: linear-gradient(145deg, rgba(12, 31, 49, 0.94), rgba(7, 23, 39, 0.94)) !important;
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.018) !important;
+}
+
+.app-page h2 {
+    font-size: clamp(1.45rem, 3vw, 2.15rem) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -0.025em;
+}
+
+.app-page h3 {
+    font-size: clamp(1.05rem, 2vw, 1.35rem) !important;
+    line-height: 1.2 !important;
+}
+
+.app-page h4 {
+    font-size: 1rem !important;
+}
+
+.app-page .uppercase {
+    font-size: 0.65rem !important;
+    letter-spacing: 0.16em !important;
+}
+
+.app-page p[class*="leading-8"],
+.app-page p[class*="leading-7"] {
+    line-height: 1.6 !important;
+}
+
+.app-page button,
+.app-page a[class*="rounded-"] {
+    min-height: 42px;
+    border-radius: 8px !important;
+}
+
+.app-page input:not([type="checkbox"]):not([type="color"]),
+.app-page select,
+.app-page textarea {
+    min-height: 44px;
+    border-radius: 9px !important;
+    border-color: rgba(148, 163, 184, 0.12) !important;
+    background: rgba(2, 12, 23, 0.58) !important;
+    font-size: 0.875rem;
+}
+
+.app-page input:focus,
+.app-page select:focus,
+.app-page textarea:focus {
+    border-color: rgba(45, 212, 191, 0.58) !important;
+    box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.08);
+}
+
+.app-native-nav {
+    position: fixed;
+    z-index: 40;
+    right: 0.75rem;
+    bottom: 0.65rem;
+    left: 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    padding: 0.4rem 0.3rem calc(0.4rem + env(safe-area-inset-bottom));
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 16px;
+    background: rgba(4, 17, 30, 0.94);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(20px);
+}
+
+.app-native-nav a {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.18rem;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.42);
+    transition: color 160ms ease, background 160ms ease;
+}
+
+.app-native-nav a > span {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.app-native-nav a small {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 0.57rem;
+    line-height: 1;
+    text-overflow: ellipsis;
+}
+
+.app-native-nav a.is-active {
+    color: var(--color-gold);
+    background: rgba(251, 191, 36, 0.08);
+}
+
+.app-topbar {
+    padding-top: calc(0.75rem + env(safe-area-inset-top));
+}
+
+@media (min-width: 1024px) {
+    .app-native-nav {
+        display: none;
+    }
+}
+
+@media (max-width: 639px) {
+    body {
+        overscroll-behavior-y: none;
+    }
+
+    .app-page {
+        padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+    }
+
+    .app-page section[class*="rounded-"],
+    .app-page aside[class*="rounded-"] {
+        padding: 1rem !important;
+    }
+
+    .app-page article {
+        padding: 0.9rem !important;
+    }
+
+    .app-page h2 {
+        font-size: 1.35rem !important;
+    }
+
+    .app-page h3 {
+        font-size: 1rem !important;
+    }
+
+    .app-page button,
+    .app-page a[class*="rounded-"] {
+        min-height: 44px;
     }
 }

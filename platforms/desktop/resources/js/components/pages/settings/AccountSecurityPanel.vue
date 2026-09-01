@@ -41,7 +41,7 @@
         <form class="mt-6 space-y-4" @submit.prevent="deleteUser">
             <FormField v-model="deleteForm.password" label="Contraseña actual" name="delete_password" type="password" autocomplete="current-password" required />
             <FormField v-model="deleteForm.confirmation" label="Escribe BORRAR MI CUENTA" name="delete_confirmation" autocomplete="off" required />
-            <button :disabled="isDeletingUser" type="submit" class="w-full rounded-2xl bg-rose-500 px-5 py-3 text-sm font-semibold text-white transition hover:brightness-105 disabled:cursor-wait disabled:opacity-60">
+            <button :disabled="isDeletingUser" type="submit" class="w-full rounded-2xl bg-[var(--color-danger)] px-5 py-3 text-sm font-semibold text-white transition hover:brightness-90 disabled:cursor-wait disabled:opacity-60">
                 {{ isDeletingUser ? 'Eliminando…' : 'Eliminar mi cuenta definitivamente' }}
             </button>
         </form>

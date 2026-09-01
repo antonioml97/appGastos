@@ -21,7 +21,7 @@
         </div>
 
         <div class="grid gap-3 lg:grid-cols-12">
-            <article class="panel relative min-h-36 overflow-hidden p-5 sm:p-6 lg:col-span-5">
+            <article class="panel relative min-h-36 overflow-hidden p-5 sm:p-6 lg:col-span-4">
                 <div class="relative z-10">
                     <p class="flex items-center gap-2 text-sm text-white/75">Balance actual <span class="text-xs text-white/40">ⓘ</span></p>
                     <p class="mt-3 font-[var(--font-display)] text-4xl font-semibold tracking-tight text-white sm:text-5xl">
@@ -45,10 +45,10 @@
                 </svg>
             </article>
 
-            <article v-for="(card, index) in summaryCards" :key="card.label" class="panel relative min-h-36 overflow-hidden p-5" :class="index === 2 ? 'lg:col-span-3' : 'lg:col-span-2'">
-                <div class="flex items-center gap-3">
-                    <span class="grid h-8 w-8 place-items-center rounded-full border text-sm" :class="card.badgeClass">{{ card.icon }}</span>
-                    <p class="text-xs text-white/55">{{ card.label }}</p>
+            <article v-for="card in summaryCards" :key="card.label" class="panel relative min-h-36 overflow-hidden p-5 lg:col-span-2">
+                <div class="flex items-center gap-3.5">
+                    <span class="grid h-10 w-10 place-items-center rounded-full border text-lg font-medium" :class="card.badgeClass">{{ card.icon }}</span>
+                    <p class="text-sm font-medium text-white/65 sm:text-base">{{ card.label }}</p>
                 </div>
                 <p class="mt-3 text-xl font-semibold tracking-tight text-white sm:text-2xl">{{ card.value }}</p>
                 <p class="mt-2 text-[11px] text-white/45"><span :class="card.accentClass">{{ card.captionLead }}</span> {{ card.caption }}</p>
@@ -184,6 +184,7 @@ const firstName = computed(() => props.user?.name?.trim()?.split(/\s+/)[0] ?? ''
 const monthName = computed(() => localState.value.selectedMonthLabel?.split(' ')[0] ?? 'este mes');
 const incomes = computed(() => Number(localState.value.summary?.totalIngresado ?? 0));
 const expenses = computed(() => Number(localState.value.summary?.totalGastado ?? 0));
+const investments = computed(() => Number(localState.value.summary?.totalInvertido ?? 0));
 const balance = computed(() => Number(localState.value.summary?.balance ?? 0));
 const balancePositive = computed(() => balance.value >= 0);
 const expenseRatioValue = computed(() => incomes.value > 0 ? Math.round((expenses.value / incomes.value) * 100) : 0);
@@ -197,6 +198,7 @@ const summaryCards = computed(() => [
     { label: 'Ingresos', value: formatCurrency(incomes.value), icon: '↓', badgeClass: 'border-emerald-400/25 bg-emerald-400/10 text-emerald-400', accentClass: 'text-emerald-400', captionLead: '↑ total', caption: 'del mes', waveClass: 'bg-[linear-gradient(170deg,transparent_45%,rgba(16,185,129,.12)_46%)]' },
     { label: 'Gastos', value: formatCurrency(expenses.value), icon: '↗', badgeClass: 'border-rose-400/25 bg-rose-400/10 text-rose-400', accentClass: 'text-rose-400', captionLead: `${expenseRatio.value}`, caption: 'de ingresos', waveClass: 'bg-[linear-gradient(170deg,transparent_45%,rgba(244,63,94,.12)_46%)]' },
     { label: 'Ahorro', value: formatCurrency(Math.max(balance.value, 0)), icon: '⬡', badgeClass: 'border-cyan-400/25 bg-cyan-400/10 text-cyan-400', accentClass: 'text-cyan-400', captionLead: balanceRatio.value, caption: 'del ingreso', waveClass: 'bg-[linear-gradient(170deg,transparent_45%,rgba(34,211,238,.12)_46%)]' },
+    { label: 'Inversiones', value: formatCurrency(investments.value), icon: '◈', badgeClass: 'border-violet-400/25 bg-violet-400/10 text-violet-400', accentClass: 'text-violet-400', captionLead: '↑ acumulado', caption: 'este mes', waveClass: 'bg-[linear-gradient(170deg,transparent_45%,rgba(139,92,246,.14)_46%)]' },
 ]);
 
 const accounts = computed(() => [
