@@ -154,4 +154,37 @@ class EloquentMonthlyReportRepositoryTest extends TestCase
 
         $this->assertSame(1, Gasto::query()->where('movimiento_fijo_id', $movimientoFijo->id)->whereDate('fecha', '2026-04-01')->count());
     }
+
+    public function test_monthly_savings_only_include_the_ahorro_category(): void
+    {
+        $ahorro = Categoria::query()->create([
+            'nombre' => 'Ahorro',
+            'color' => '#22C55E',
+            'icono' => 'ahorro',
+        ]);
+
+        $seguros = Categoria::query()->create([
+            'nombre' => 'Seguros',
+            'color' => '#06B6D4',
+            'icono' => 'ahorro',
+        ]);
+
+        Gasto::query()->create([
+            'titulo' => 'Aportacion mensual',
+            'importe' => 300,
+            'fecha' => '2026-04-10',
+            'categoria_id' => $ahorro->id,
+        ]);
+
+        Gasto::query()->create([
+            'titulo' => 'Seguro del coche',
+            'importe' => 125,
+            'fecha' => '2026-04-11',
+            'categoria_id' => $seguros->id,
+        ]);
+
+        $payload = app(EloquentMonthlyReportRepository::class)->getPayload('2026-04');
+
+        $this->assertSame(300.0, $payload['summary']['totalAhorrado']);
+    }
 }

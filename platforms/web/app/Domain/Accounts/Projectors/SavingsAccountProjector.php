@@ -38,9 +38,8 @@ class SavingsAccountProjector
     public function isSavingsCategory(?string $categoryName, ?string $categoryIcon): bool
     {
         $normalizedName = mb_strtolower(trim((string) $categoryName));
-        $normalizedIcon = mb_strtolower(trim((string) $categoryIcon));
 
-        return $normalizedName === 'ahorro' || $normalizedIcon === 'ahorro';
+        return $normalizedName === 'ahorro';
     }
 
     private function resolvePrimarySavingsAccount(): ?Cuenta

@@ -76,6 +76,9 @@ class EloquentMonthlyReportRepository implements MonthlyReportRepositoryInterfac
             ->filter(fn (array $item) => Str::lower(Str::ascii((string) $item['nombre'])) === 'inversiones'
                 || Str::lower(Str::ascii((string) $item['icono'])) === 'inversiones')
             ->sum('total');
+        $totalAhorrado = (float) $desglose
+            ->filter(fn (array $item) => Str::lower(Str::ascii((string) $item['nombre'])) === 'ahorro')
+            ->sum('total');
         $totalMovimientos = $gastos->count();
         $importeMedio = $totalMovimientos > 0 ? $totalGastado / $totalMovimientos : 0;
         $balance = $totalIngresado - $totalGastado;
@@ -94,6 +97,7 @@ class EloquentMonthlyReportRepository implements MonthlyReportRepositoryInterfac
                 'totalGastado' => round($totalGastado, 2),
                 'totalIngresado' => round($totalIngresado, 2),
                 'totalInvertido' => round($totalInvertido, 2),
+                'totalAhorrado' => round($totalAhorrado, 2),
                 'totalMovimientos' => $totalMovimientos,
                 'importeMedio' => round($importeMedio, 2),
                 'balance' => round($balance, 2),
