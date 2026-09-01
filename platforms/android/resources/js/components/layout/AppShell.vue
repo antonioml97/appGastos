@@ -98,7 +98,6 @@
                 :fixed-entries="settings.fixedEntries"
                 :accounts="settings.accounts"
                 :categories="settings.categories"
-                :base-categories="settings.baseCategories"
                 @export="exportWorkbook"
                 @import-workbook="importWorkbook"
                 @clear-data="clearAllData"
@@ -218,7 +217,6 @@ const settings = reactive({
     fixedEntries: initialData.settings?.fixedEntries ?? [],
     accounts: initialData.settings?.accounts ?? [],
     categories: initialData.settings?.categories ?? [],
-    baseCategories: initialData.settings?.baseCategories ?? [],
 });
 const home = reactive({
     selectedMonthLabel: initialData.home?.selectedMonthLabel ?? currentMonthLabel(),
@@ -833,7 +831,6 @@ function hydrate(payload) {
         settings.fixedEntries = payload.settings?.fixedEntries ?? [];
         settings.accounts = payload.settings?.accounts ?? [];
         settings.categories = payload.settings?.categories ?? [];
-        settings.baseCategories = payload.settings?.baseCategories ?? [];
     }
 }
 

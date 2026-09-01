@@ -23,6 +23,26 @@
                     </button>
                 </div>
 
+                <article class="mt-6 flex flex-col gap-4 rounded-[1.5rem] border border-cyan-300/20 bg-[linear-gradient(135deg,rgba(34,211,238,0.12),rgba(16,185,129,0.05))] p-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex min-w-0 items-center gap-4">
+                        <span class="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-cyan-300/20 bg-cyan-300/10 text-2xl text-cyan-300" aria-hidden="true">☆</span>
+                        <div class="min-w-0">
+                            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200/70">Cuenta de ahorro</p>
+                            <p v-if="savingsAccount" class="mt-1 text-2xl font-semibold text-white">{{ formatCurrency(savingsAccount.saldo_actual) }}</p>
+                            <p v-else class="mt-1 text-sm text-white/60">Todavía no has configurado una cuenta de ahorro.</p>
+                            <p v-if="savingsAccount" class="mt-1 truncate text-sm text-white/55">{{ savingsAccount.nombre }} · saldo actual</p>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="shrink-0 rounded-xl bg-cyan-300 px-5 py-3 text-sm font-bold text-[var(--color-ink)] transition hover:brightness-105"
+                        @click="configureSavingsAccount"
+                    >
+                        {{ savingsAccount ? 'Modificar ahorro' : 'Configurar ahorro' }}
+                    </button>
+                </article>
+
                 <div v-if="isAccountsSectionOpen && accountErrors.length" class="mt-6 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-sm text-amber-50">
                     <ul class="space-y-2">
                         <li v-for="error in accountErrors" :key="error">{{ error }}</li>
@@ -46,7 +66,7 @@
 
                     <div class="flex flex-wrap gap-3">
                         <button type="submit" class="rounded-2xl bg-[var(--color-mint)] px-5 py-3 text-sm font-semibold text-[var(--color-ink)] transition hover:brightness-105">
-                            {{ editingAccountId ? 'Guardar cuenta' : 'Crear cuenta' }}
+                            {{ editingAccountId ? 'Guardar cambios' : 'Crear cuenta' }}
                         </button>
                         <button
                             v-if="editingAccountId"
@@ -276,47 +296,6 @@
         <aside class="space-y-3">
             <AccountSecurityPanel @user-deleted="emit('user-deleted', $event)" />
 
-            <section class="overflow-hidden rounded-[2rem] border border-white/10 bg-white/6 p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
-                <div class="flex flex-wrap items-start justify-between gap-4">
-                    <div>
-                        <p class="text-sm uppercase tracking-[0.28em] text-[var(--color-mint)]/85">Base</p>
-                        <h3 class="mt-3 font-[var(--font-display)] text-[clamp(1.9rem,4vw,2.8rem)] leading-none font-bold">
-                            Categorias base
-                        </h3>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-3">
-                        <span class="rounded-full border border-white/10 bg-white/8 px-4 py-2 text-sm text-white/70">
-                            {{ baseCategories.length }} categorias
-                        </span>
-                        <button
-                            type="button"
-                            class="rounded-2xl border border-white/10 bg-white/8 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/12"
-                            @click="isBaseCategoriesSectionOpen = !isBaseCategoriesSectionOpen"
-                        >
-                            {{ isBaseCategoriesSectionOpen ? 'Ocultar categorias' : 'Mostrar categorias' }}
-                        </button>
-                    </div>
-                </div>
-
-                <div v-if="isBaseCategoriesSectionOpen && baseCategories.length" class="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-                    <article
-                        v-for="category in baseCategories"
-                        :key="category.id"
-                        class="flex items-center justify-between gap-4 rounded-[1.4rem] border border-white/10 bg-[var(--color-ink-soft)]/55 p-4"
-                    >
-                        <div class="min-w-0">
-                            <p class="truncate text-base font-semibold text-white">{{ category.nombre }}</p>
-                            <p class="mt-1 text-xs uppercase tracking-[0.18em] text-white/45">{{ category.icono }}</p>
-                        </div>
-                        <div class="h-10 w-10 rounded-2xl border border-white/10" :style="{ backgroundColor: category.color }"></div>
-                    </article>
-                </div>
-
-                <div v-else-if="isBaseCategoriesSectionOpen" class="mt-8 rounded-[1.5rem] border border-dashed border-white/12 bg-white/4 p-6 text-sm leading-7 text-white/65">
-                    No hay categorias base disponibles.
-                </div>
-            </section>
-
             <section class="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-6 shadow-xl shadow-black/10 backdrop-blur-lg sm:p-8">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
@@ -435,7 +414,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import AccountSecurityPanel from './AccountSecurityPanel.vue';
 import FormField from '../../ui/form/FormField.vue';
 import FormTextarea from '../../ui/form/FormTextarea.vue';
@@ -447,7 +426,6 @@ const props = defineProps({
     fixedEntries: { type: Array, default: () => [] },
     accounts: { type: Array, default: () => [] },
     categories: { type: Array, default: () => [] },
-    baseCategories: { type: Array, default: () => [] },
 });
 
 const emit = defineEmits([
@@ -468,10 +446,9 @@ const editingAccountId = ref(null);
 const accountErrors = ref([]);
 const editingId = ref(null);
 const errors = ref([]);
-const isAccountsSectionOpen = ref(false);
+const isAccountsSectionOpen = ref(true);
 const isFixedSectionOpen = ref(false);
 const isFixedEntriesSectionOpen = ref(false);
-const isBaseCategoriesSectionOpen = ref(false);
 const isExportSectionOpen = ref(false);
 const isDangerSectionOpen = ref(false);
 const importErrors = ref([]);
@@ -481,6 +458,7 @@ const importInputKey = ref(0);
 const withdrawForms = reactive({});
 const accountForm = reactive(buildDefaultAccountForm());
 const form = reactive(buildDefaultForm());
+const savingsAccount = computed(() => props.accounts.find((account) => account.tipo === 'ahorro') ?? null);
 
 watch(() => form.tipo, (value) => {
     if (value !== 'gasto') {
@@ -546,11 +524,25 @@ function submit() {
 }
 
 function startEditAccount(account) {
+    isAccountsSectionOpen.value = true;
     editingAccountId.value = account.id;
     accountForm.nombre = account.nombre;
     accountForm.tipo = account.tipo;
     accountForm.saldo_inicial = String(account.saldo_inicial);
     accountErrors.value = [];
+}
+
+function configureSavingsAccount() {
+    isAccountsSectionOpen.value = true;
+
+    if (savingsAccount.value) {
+        startEditAccount(savingsAccount.value);
+        return;
+    }
+
+    resetAccountForm();
+    accountForm.nombre = 'Cuenta de ahorro';
+    accountForm.tipo = 'ahorro';
 }
 
 function startEdit(entry) {
